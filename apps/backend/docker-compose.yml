@@ -1,0 +1,15 @@
+services:
+  mongodb:
+    image: mongo:7
+    container_name: coffee_lovers_mongo
+    ports:
+      - "${PORT_MONGO:-27017}:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-secret}
+      MONGO_INITDB_DATABASE: ${MONGO_DB:-coffee_lovers}
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:

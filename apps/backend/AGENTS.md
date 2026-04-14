@@ -59,3 +59,12 @@ test/
 - DTOs devem usar `class-validator` para validação de entrada.
 - Todo endpoint deve ter ao menos um teste unitário.
 - Siga TDD: testes passando antes de considerar a feature pronta.
+
+## Variáveis de Ambiente
+
+A aplicação utiliza `@nestjs/config` com validação via `class-validator` definida em `src/config/env.ts`.
+
+| Variável      | Obrigatória | Descrição                     | Default |
+|---------------|-------------|-------------------------------|---------|
+| `PORT`        | Não         | Porta HTTP da aplicação       | `3001`  |
+| `MONGODB_URI` | **Sim**     | URI de conexão com o MongoDB  | -       |
