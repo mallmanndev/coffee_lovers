@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
+import { TsRestModule } from '@ts-rest/nest';
 import { UsersController } from './controllers/users.controller';
 import { MongooseUserRepository } from './repositories/user.repository.impl';
 import { UserRepository } from './repositories/user.repository';
@@ -11,13 +12,14 @@ import { LoginUserUseCase } from './use-cases/login-user.use-case';
 
 @Module({
   imports: [
+    TsRestModule.register({}),
     MongooseModule.forFeature([{ name: UserDocument.name, schema: UserSchema }]),
     JwtModule.registerAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService): JwtModuleOptions => ({
         secret: configService.get<string>('JWT_SECRET'),
         signOptions: {
-          expiresIn: configService.get<string>('JWT_EXPIRES_IN'),
+          expiresIn: configService.get<number>('JWT_EXPIRES_IN'),
         },
       }),
     }),

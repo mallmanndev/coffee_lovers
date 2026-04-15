@@ -1,11 +1,3 @@
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import type { LoginBody } from '@coffee-lovers/shared';
 
-export class LoginUserDto {
-  @IsEmail({}, { message: 'E-mail inválido' })
-  @IsNotEmpty({ message: 'O e-mail é obrigatório' })
-  email: string;
-
-  @IsString()
-  @IsNotEmpty({ message: 'A senha é obrigatória' })
-  password: string;
-}
+export type LoginUserDto = LoginBody;

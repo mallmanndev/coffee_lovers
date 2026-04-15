@@ -1,6 +1,9 @@
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import { SwaggerModule } from '@nestjs/swagger';
+import { generateOpenApi } from '@ts-rest/open-api';
+import { authContract } from '@coffee-lovers/shared';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -10,6 +13,16 @@ async function bootstrap() {
     forbidNonWhitelisted: true,
     transform: true,
   }));
+
+  const document = generateOpenApi(authContract, {
+    info: {
+      title: 'Coffee Lovers API',
+      version: '1.0.0',
+      description: 'API for Coffee Lovers social network',
+    },
+  });
+  SwaggerModule.setup('api', app, document);
+
   const configService = app.get(ConfigService);
   const port = configService.get<number>('PORT') || 3001;
   await app.listen(port);
