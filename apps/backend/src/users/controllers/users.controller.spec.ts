@@ -6,6 +6,7 @@ import { UsersController } from './users.controller';
 import { RegisterUserUseCase } from '../use-cases/register-user.use-case';
 import { LoginUserUseCase } from '../use-cases/login-user.use-case';
 import { User } from '../domain/user.entity';
+import { ConflictException } from '@nestjs/common';
 
 describe('UsersController', () => {
   let app: INestApplication;
@@ -51,6 +52,19 @@ describe('UsersController', () => {
     expect(registerUseCase.execute).toHaveBeenCalledWith(dto);
     expect(res.status).toBe(201);
     expect(res.body.email).toBe(dto.email);
+  });
+
+  it('POST /accounts/register returns 409 if email already exists', async () => {
+    const dto = { name: 'John', email: 'john@example.com', password: '123456', confirmPassword: '123456' };
+    registerUseCase.execute.mockRejectedValue(new ConflictException('E-mail já está em uso'));
+
+    const res = await request(app.getHttpServer())
+      .post('/accounts/register')
+      .send(dto);
+
+    expect(registerUseCase.execute).toHaveBeenCalledWith(dto);
+    expect(res.status).toBe(409);
+    expect(res.body.message).toBe('E-mail já está em uso');
   });
 
   it('POST /accounts/login calls login use case and returns 200', async () => {

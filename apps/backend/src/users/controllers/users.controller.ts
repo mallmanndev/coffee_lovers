@@ -4,6 +4,7 @@ import { authContract } from '@coffee-lovers/shared';
 import { RegisterUserUseCase } from '../use-cases/register-user.use-case';
 import { LoginUserUseCase } from '../use-cases/login-user.use-case';
 import { UserResponseDto } from '../dto/user-response.dto';
+import { ConflictException } from '@nestjs/common';
 
 @Controller()
 export class UsersController {
@@ -15,8 +16,15 @@ export class UsersController {
   @TsRestHandler(authContract.register)
   async register(): Promise<unknown> {
     return tsRestHandler(authContract.register, async ({ body }) => {
-      const user = await this.registerUserUseCase.execute(body);
-      return { status: 201 as const, body: UserResponseDto.fromEntity(user) };
+      try {
+        const user = await this.registerUserUseCase.execute(body);
+        return { status: 201 as const, body: UserResponseDto.fromEntity(user) };
+      } catch (error) {
+        if (error instanceof ConflictException) {
+          return { status: 409 as const, body: { message: error.message } };
+        }
+        throw error;
+      }
     });
   }
 

@@ -11,7 +11,7 @@ Rede social para descoberta, avaliação e compartilhamento de experiências com
 | Estilização | Tailwind CSS 4                |
 | API Client  | @ts-rest/core                 |
 | Validação   | Zod                           |
-| Testes      | Jest + Testing Library        |
+| Testes      | Playwright (E2E) + Jest (utils)|
 | Linguagem   | TypeScript                    |
 
 ## Comandos
@@ -20,7 +20,8 @@ Rede social para descoberta, avaliação e compartilhamento de experiências com
 - `pnpm build` — gera o build de produção
 - `pnpm start` — inicia o servidor de produção
 - `pnpm lint` — executa o ESLint
-- `pnpm test` — executa os testes
+- `pnpm test` — executa testes unitários (apenas para utils)
+- `pnpm test:e2e` — executa os testes Playwright (fluxos de API)
 
 ## Arquitetura
 
@@ -63,6 +64,9 @@ src/
 - Uma rota = uma pasta com `page.tsx` em `src/app/`
 - Componentes usados em mais de uma página vão em `src/components/`
 - Nenhuma lógica de negócio nos componentes — apenas chamadas à API e renderização
+- **Testes (E2E):** Fluxos que dependem de API devem ser feitos com Playwright em `e2e/`.
+- **Sem Mocks:** Não mockar respostas da API em testes de frontend. Os testes E2E batem no backend real.
+- **Jest:** Reservado apenas para funções utilitárias puras.
 - TDD: testes passando antes de considerar a feature pronta
 - Use shadcn/ui para componentes de interface; evite reinventar primitivos de UI
 

@@ -49,6 +49,7 @@ export function RegisterForm() {
         setError("Ocorreu um erro ao realizar o cadastro. Tente novamente.");
       }
     } catch (e) {
+      console.error("Erro na requisição:", e);
       setError("Erro de conexão com o servidor.");
     } finally {
       setIsLoading(false);
