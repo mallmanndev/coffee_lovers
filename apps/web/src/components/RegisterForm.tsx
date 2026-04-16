@@ -58,7 +58,7 @@ export function RegisterForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full max-w-md">
-      <div className="space-y-2">
+      <div className="space-y-3">
         <Label htmlFor="name">Nome completo</Label>
         <Input
           id="name"
@@ -71,7 +71,7 @@ export function RegisterForm() {
         )}
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         <Label htmlFor="email">E-mail</Label>
         <Input
           id="email"
@@ -85,7 +85,7 @@ export function RegisterForm() {
         )}
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         <Label htmlFor="password">Senha</Label>
         <Input
           id="password"
@@ -99,7 +99,7 @@ export function RegisterForm() {
         )}
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         <Label htmlFor="confirmPassword">Confirmar Senha</Label>
         <Input
           id="confirmPassword"
