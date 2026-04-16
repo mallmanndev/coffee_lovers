@@ -74,12 +74,6 @@ export function LoginForm() {
         </Alert>
       )}
 
-      {error && (
-        <Alert variant="destructive" className="max-w-md">
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-
       <div className="space-y-3">
         <Label htmlFor="email">E-mail</Label>
         <Input
@@ -107,6 +101,12 @@ export function LoginForm() {
           <p className="text-sm text-destructive">{errors.password.message}</p>
         )}
       </div>
+
+      {error && (
+        <div className="p-3 bg-destructive/15 text-destructive text-sm rounded-md">
+          {error}
+        </div>
+      )}
 
       <Button type="submit" className="w-full" disabled={isLoading}>
         {isLoading ? "Entrando..." : "Entrar"}

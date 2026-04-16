@@ -43,9 +43,12 @@ export function RegisterForm() {
       });
       console.log("Resposta da API:", response);
       if (response.status === 201) {
+        
         router.push("/login?registered=true");
       } else if (response.status === 409) {
         setError("Este e-mail já está em uso.");
+      } else if (response.status === 400) {
+        setError(response.body?.message);
       } else {
         setError("Ocorreu um erro ao realizar o cadastro. Tente novamente.");
       }
@@ -59,12 +62,6 @@ export function RegisterForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full max-w-md">
-      {error && (
-        <Alert variant="destructive">
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-
       <div className="space-y-3">
         <Label htmlFor="name">Nome completo</Label>
         <Input

@@ -64,6 +64,7 @@ src/
 - Uma rota = uma pasta com `page.tsx` em `src/app/`
 - Componentes usados em mais de uma página vão em `src/components/`
 - Nenhuma lógica de negócio nos componentes — apenas chamadas à API e renderização
+- **Proibido o uso de `any`:** Tipagem estrita é obrigatória em todo o projeto.
 - **Testes (E2E):** Fluxos que dependem de API devem ser feitos com Playwright em `e2e/`.
 - **Sem Mocks:** Não mockar respostas da API em testes de frontend. Os testes E2E batem no backend real.
 - **Jest:** Reservado apenas para funções utilitárias puras.

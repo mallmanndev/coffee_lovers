@@ -16,6 +16,7 @@ export const authContract = c.router({
     body: registerBodySchema,
     responses: {
       201: userResponseSchema,
+      400: z.object({ message: z.string() }),
       409: z.object({ message: z.string() }),
     },
     summary: 'Register a new user',
