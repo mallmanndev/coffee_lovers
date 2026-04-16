@@ -2,52 +2,61 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { 
-  registerBodySchema, 
-  type RegisterBody 
+import {
+  loginBodySchema,
+  type LoginBody
 } from "@coffee-lovers/shared";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { useState } from "react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useState, useEffect } from "react";
 import { apiClient } from "@/lib/api-client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { AlertCircleIcon } from "lucide-react";
 
-export function RegisterForm() {
+export function LoginForm() {
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("registered")) {
+      setSuccess("Conta criada com sucesso! Faça login para continuar.");
+    }
+  }, [searchParams]);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<RegisterBody>({
-    resolver: zodResolver(registerBodySchema),
+  } = useForm<LoginBody>({
+    resolver: zodResolver(loginBodySchema),
     defaultValues: {
-      name: "",
       email: "",
       password: "",
-      confirmPassword: "",
     },
   });
 
-  const onSubmit = async (data: RegisterBody) => {
+  const onSubmit = async (data: LoginBody) => {
     setIsLoading(true);
     setError(null);
+    setSuccess(null);
 
     try {
-      const response = await apiClient.register({
+      const response = await apiClient.login({
         body: data,
       });
-      console.log("Resposta da API:", response);
-      if (response.status === 201) {
-        router.push("/login?registered=true");
-      } else if (response.status === 409) {
-        setError("Este e-mail já está em uso.");
+
+      if (response.status === 200) {
+        // Por enquanto apenas redirecionamos, o estado de auth será tratado futuramente
+        router.push("/feed");
+      } else if (response.status === 401) {
+        setError("E-mail ou senha inválidos.");
       } else {
-        setError("Ocorreu um erro ao realizar o cadastro. Tente novamente.");
+        setError("Ocorreu um erro ao realizar o login. Tente novamente.");
       }
     } catch (e) {
       console.error("Erro na requisição:", e);
@@ -59,24 +68,17 @@ export function RegisterForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 w-full max-w-md">
-      {error && (
-        <Alert variant="destructive">
-          <AlertDescription>{error}</AlertDescription>
+      {success && (
+        <Alert>
+          <AlertDescription>{success}</AlertDescription>
         </Alert>
       )}
 
-      <div className="space-y-3">
-        <Label htmlFor="name">Nome completo</Label>
-        <Input
-          id="name"
-          placeholder="Seu nome"
-          {...register("name")}
-          disabled={isLoading}
-        />
-        {errors.name && (
-          <p className="text-sm text-destructive">{errors.name.message}</p>
-        )}
-      </div>
+      {error && (
+        <Alert variant="destructive" className="max-w-md">
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
       <div className="space-y-3">
         <Label htmlFor="email">E-mail</Label>
@@ -106,30 +108,8 @@ export function RegisterForm() {
         )}
       </div>
 
-      <div className="space-y-3">
-        <Label htmlFor="confirmPassword">Confirmar Senha</Label>
-        <Input
-          id="confirmPassword"
-          type="password"
-          placeholder="******"
-          {...register("confirmPassword")}
-          disabled={isLoading}
-        />
-        {errors.confirmPassword && (
-          <p className="text-sm text-destructive">
-            {errors.confirmPassword.message}
-          </p>
-        )}
-      </div>
-
-      {error && (
-        <div className="p-3 bg-destructive/15 text-destructive text-sm rounded-md">
-          {error}
-        </div>
-      )}
-
       <Button type="submit" className="w-full" disabled={isLoading}>
-        {isLoading ? "Criando conta..." : "Criar conta"}
+        {isLoading ? "Entrando..." : "Entrar"}
       </Button>
     </form>
   );
