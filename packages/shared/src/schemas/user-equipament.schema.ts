@@ -1,26 +1,26 @@
 import { z } from 'zod';
-import { typeSpecificDataSchema } from './equipment.schema';
+import { typeSpecificDataSchema } from './equipament.schema';
 
 export const modificationSchema = z.object({
   name: z.string().min(1),
   description: z.string().min(1),
 });
 
-export const userEquipmentBaseSchema = z.object({
+export const userEquipamentBaseSchema = z.object({
   description: z.string().optional(),
   modifications: z.array(modificationSchema).default([]),
   photos: z.array(z.string()).default([]),
   typeSpecificData: typeSpecificDataSchema,
 });
 
-export const userEquipmentResponseSchema = userEquipmentBaseSchema.extend({
+export const userEquipamentResponseSchema = userEquipamentBaseSchema.extend({
   id: z.string(),
-  equipmentId: z.string(),
+  equipamentId: z.string(),
   userId: z.string(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
 
 export type Modification = z.infer<typeof modificationSchema>;
-export type UserEquipmentBase = z.infer<typeof userEquipmentBaseSchema>;
-export type UserEquipmentResponse = z.infer<typeof userEquipmentResponseSchema>;
+export type UserEquipamentBase = z.infer<typeof userEquipamentBaseSchema>;
+export type UserEquipamentResponse = z.infer<typeof userEquipamentResponseSchema>;

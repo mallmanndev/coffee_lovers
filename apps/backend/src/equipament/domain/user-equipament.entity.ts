@@ -1,6 +1,6 @@
-export type UserEquipmentProps = {
+export type UserEquipamentProps = {
   id?: string;
-  equipmentId: string;
+  equipamentId: string;
   userId: string;
   description?: string;
   modifications?: { name: string; description: string }[];
@@ -10,10 +10,10 @@ export type UserEquipmentProps = {
   updatedAt?: Date;
 };
 
-export class UserEquipment {
+export class UserEquipament {
   private constructor(
     private readonly id: string | null,
-    private readonly equipmentId: string,
+    private readonly equipamentId: string,
     private readonly userId: string,
     private readonly description: string | null,
     private readonly modifications: { name: string; description: string }[],
@@ -23,10 +23,10 @@ export class UserEquipment {
     private readonly updatedAt: Date,
   ) {}
 
-  static create(props: UserEquipmentProps): UserEquipment {
-    return new UserEquipment(
+  static create(props: UserEquipamentProps): UserEquipament {
+    return new UserEquipament(
       props.id || null,
-      props.equipmentId,
+      props.equipamentId,
       props.userId,
       props.description || null,
       props.modifications || [],
@@ -37,10 +37,10 @@ export class UserEquipment {
     );
   }
 
-  update(props: Partial<Omit<UserEquipmentProps, 'id' | 'equipmentId' | 'userId' | 'createdAt' | 'updatedAt'>>): UserEquipment {
-    return new UserEquipment(
+  update(props: Partial<Omit<UserEquipamentProps, 'id' | 'equipamentId' | 'userId' | 'createdAt' | 'updatedAt'>>): UserEquipament {
+    return new UserEquipament(
       this.id,
-      this.equipmentId,
+      this.equipamentId,
       this.userId,
       props.description !== undefined ? props.description : this.description,
       props.modifications || this.modifications,
@@ -52,7 +52,7 @@ export class UserEquipment {
   }
 
   getId(): string | null { return this.id; }
-  getEquipmentId(): string { return this.equipmentId; }
+  getEquipamentId(): string { return this.equipamentId; }
   getUserId(): string { return this.userId; }
   getDescription(): string | null { return this.description; }
   getModifications(): { name: string; description: string }[] { return this.modifications; }

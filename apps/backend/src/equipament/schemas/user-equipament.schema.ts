@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 
-@Schema({ timestamps: true, collection: 'user_equipment' })
-export class UserEquipmentDocument extends Document {
+@Schema({ timestamps: true, collection: 'user_equipament' })
+export class UserEquipamentDocument extends Document {
   @Prop({ required: true, index: true })
-  equipmentId: string;
+  equipamentId: string;
 
   @Prop({ required: true, index: true })
   userId: string;
@@ -33,5 +33,5 @@ export class UserEquipmentDocument extends Document {
   updatedAt: Date;
 }
 
-export const UserEquipmentSchema = SchemaFactory.createForClass(UserEquipmentDocument);
-UserEquipmentSchema.index({ userId: 1, equipmentId: 1 }, { unique: true });
+export const UserEquipamentSchema = SchemaFactory.createForClass(UserEquipamentDocument);
+UserEquipamentSchema.index({ userId: 1, equipamentId: 1 }, { unique: true });

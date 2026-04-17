@@ -8,7 +8,7 @@ import { AppService } from './app.service';
 import { validateEnv } from './config/env';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-import { EquipmentModule } from './equipment/equipment.module';
+import { EquipamentModule } from './equipament/equipament.module';
 
 @Module({
   imports: [
@@ -28,7 +28,7 @@ import { EquipmentModule } from './equipment/equipment.module';
     }),
     AuthModule,
     UsersModule,
-    EquipmentModule,
+    EquipamentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

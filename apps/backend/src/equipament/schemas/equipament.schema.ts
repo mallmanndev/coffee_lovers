@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 
-@Schema({ timestamps: true, collection: 'equipment' })
-export class EquipmentDocument {
+@Schema({ timestamps: true, collection: 'equipament' })
+export class EquipamentDocument {
   _id: MongooseSchema.Types.ObjectId;
   
   @Prop({ required: true, index: true })
@@ -33,4 +33,4 @@ export class EquipmentDocument {
   updatedAt: Date;
 }
 
-export const EquipmentSchema: MongooseSchema = SchemaFactory.createForClass(EquipmentDocument);
+export const EquipamentSchema: MongooseSchema = SchemaFactory.createForClass(EquipamentDocument);

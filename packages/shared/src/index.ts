@@ -1,13 +1,13 @@
 import { initContract } from '@ts-rest/core';
 import { authContract } from './contracts/auth.contract';
-import { equipmentContract } from './contracts/equipment.contract';
+import { equipamentContract } from './contracts/equipament.contract';
 
 const c = initContract();
 
 export const apiContract = c.router(
   {
     auth: authContract,
-    equipment: equipmentContract,
+    equipament: equipamentContract,
   },
   {
     commonResponses: {
@@ -21,6 +21,6 @@ export const apiContract = c.router(
 
 export * from './schemas/auth.schema';
 export * from './contracts/auth.contract';
-export * from './schemas/equipment.schema';
-export * from './schemas/user-equipment.schema';
-export * from './contracts/equipment.contract';
+export * from './schemas/equipament.schema';
+export * from './schemas/user-equipament.schema';
+export * from './contracts/equipament.contract';

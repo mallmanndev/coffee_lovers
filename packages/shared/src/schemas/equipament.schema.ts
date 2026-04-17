@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const EquipmentTypeEnum = z.enum([
+export const EquipamentTypeEnum = z.enum([
   'GRINDER',
   'SCALE',
   'KETTLE',
@@ -8,7 +8,7 @@ export const EquipmentTypeEnum = z.enum([
   'MISC',
 ]);
 
-export type EquipmentType = z.infer<typeof EquipmentTypeEnum>;
+export type EquipamentType = z.infer<typeof EquipamentTypeEnum>;
 
 const GrinderDataSchema = z.object({
   clicks: z.number().optional(),
@@ -26,8 +26,8 @@ export const typeSpecificDataSchema = z.union([
   GenericDataSchema,
 ]);
 
-export const equipmentBaseSchema = z.object({
-  type: EquipmentTypeEnum,
+export const equipamentBaseSchema = z.object({
+  type: EquipamentTypeEnum,
   name: z.string().min(1),
   model: z.string().min(1),
   brand: z.string().min(1),
@@ -35,7 +35,7 @@ export const equipmentBaseSchema = z.object({
   photos: z.array(z.string()).default([]),
 });
 
-export const equipmentResponseSchema = equipmentBaseSchema.extend({
+export const equipamentResponseSchema = equipamentBaseSchema.extend({
   id: z.string(),
   createdById: z.string(),
   typeSpecificData: typeSpecificDataSchema,
@@ -43,8 +43,8 @@ export const equipmentResponseSchema = equipmentBaseSchema.extend({
   updatedAt: z.string(),
 });
 
-export const mergedEquipmentResponseSchema = equipmentResponseSchema.extend({
-  userEquipmentId: z.string().optional(),
+export const mergedEquipamentResponseSchema = equipamentResponseSchema.extend({
+  userEquipamentId: z.string().optional(),
   description: z.string().optional(),
   modifications: z.array(z.any()).default([]),
   userPhotos: z.array(z.string()).default([]),
@@ -52,13 +52,13 @@ export const mergedEquipmentResponseSchema = equipmentResponseSchema.extend({
   isOwned: z.boolean().default(false),
 });
 
-export type EquipmentBase = z.infer<typeof equipmentBaseSchema>;
-export type EquipmentResponse = z.infer<typeof equipmentResponseSchema>;
-export type MergedEquipmentResponse = z.infer<typeof mergedEquipmentResponseSchema>;
+export type EquipamentBase = z.infer<typeof equipamentBaseSchema>;
+export type EquipamentResponse = z.infer<typeof equipamentResponseSchema>;
+export type MergedEquipamentResponse = z.infer<typeof mergedEquipamentResponseSchema>;
 
-export const createEquipmentInputSchema = z.object({
-  equipmentId: z.string().optional(),
-  type: EquipmentTypeEnum,
+export const createEquipamentInputSchema = z.object({
+  equipamentId: z.string().optional(),
+  type: EquipamentTypeEnum,
   name: z.string().min(1),
   model: z.string().min(1),
   brand: z.string().min(1),
@@ -68,9 +68,9 @@ export const createEquipmentInputSchema = z.object({
   typeSpecificData: z.record(z.any()).optional(),
 });
 
-export const createEquipmentOutputSchema = z.object({
+export const createEquipamentOutputSchema = z.object({
   id: z.string(),
-  type: EquipmentTypeEnum,
+  type: EquipamentTypeEnum,
   name: z.string(),
   model: z.string(),
   brand: z.string(),
@@ -78,11 +78,11 @@ export const createEquipmentOutputSchema = z.object({
   photos: z.array(z.string()),
   createdById: z.string(),
   typeSpecificData: z.record(z.any()),
-  userEquipmentId: z.string(),
+  userEquipamentId: z.string(),
   modifications: z.array(z.any()),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
 
-export type CreateEquipmentInput = z.infer<typeof createEquipmentInputSchema>;
-export type CreateEquipmentOutput = z.infer<typeof createEquipmentOutputSchema>;
+export type CreateEquipamentInput = z.infer<typeof createEquipamentInputSchema>;
+export type CreateEquipamentOutput = z.infer<typeof createEquipamentOutputSchema>;

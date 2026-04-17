@@ -1,11 +1,11 @@
-# Módulo: Equipment (Equipamentos de Café)
+# Módulo: Equipament (Equipamentos de Café)
 
 Este módulo gerencia o catálogo base de equipamentos e a posse personalizada de cada usuário.
 
 ## Regras de Negócio
 
-- **Criação In-place**: `POST /equipment` cria simultaneamente o registro no catálogo (`Equipment`) e o registro de posse do usuário (`UserEquipment`). O `userId` e `createdById` são derivados do token JWT.
-- **Personalização**: `PUT /equipment/:id` e `DELETE /equipment/:id` afetam **apenas** a posse do usuário autenticado. O registro base do catálogo é preservado.
+- **Criação In-place**: `POST /equipament` cria simultaneamente o registro no catálogo (`Equipament`) e o registro de posse do usuário (`UserEquipament`). O `userId` e `createdById` são derivados do token JWT.
+- **Personalização**: `PUT /equipament/:id` e `DELETE /equipament/:id` afetam **apenas** a posse do usuário autenticado. O registro base do catálogo é preservado.
 
 ### Tipos de Equipamento & Dados Específicos
 
@@ -24,10 +24,10 @@ Este módulo gerencia o catálogo base de equipamentos e a posse personalizada d
 
 ```mermaid
 graph TD
-    A[POST /equipment Auth] --> B[EquipmentController]
-    B --> C[AddUserEquipmentUseCase]
-    C --> D[CreateEquipmentUseCase - Catálogo Base]
-    C --> E[UserEquipmentRepository - Posse do Usuário]
+    A[POST /equipament Auth] --> B[EquipamentController]
+    B --> C[AddUserEquipamentUseCase]
+    C --> D[CreateEquipamentUseCase - Catálogo Base]
+    C --> E[UserEquipamentRepository - Posse do Usuário]
     D --> F[(MongoDB)]
     E --> F
 ```

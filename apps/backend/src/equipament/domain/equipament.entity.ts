@@ -1,4 +1,4 @@
-export type EquipmentProps = {
+export type EquipamentProps = {
   id?: string;
   type: string;
   name: string;
@@ -12,7 +12,7 @@ export type EquipmentProps = {
   updatedAt?: Date;
 };
 
-export class Equipment {
+export class Equipament {
   private constructor(
     private readonly id: string | null,
     private readonly type: string,
@@ -27,8 +27,8 @@ export class Equipment {
     private readonly updatedAt: Date,
   ) {}
 
-  static create(props: EquipmentProps): Equipment {
-    return new Equipment(
+  static create(props: EquipamentProps): Equipament {
+    return new Equipament(
       props.id || null,
       props.type,
       props.name,
