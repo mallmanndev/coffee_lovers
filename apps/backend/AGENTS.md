@@ -12,11 +12,12 @@ API REST construída com **NestJS** e **MongoDB**.
 ## Comandos
 
 ```bash
-pnpm dev        # inicia em modo watch
-pnpm build      # gera o build
-pnpm test       # executa os testes unitários
-pnpm test:e2e   # executa os testes e2e
-pnpm test:cov   # cobertura de testes
+pnpm --filter backend dev        # inicia em modo watch
+pnpm --filter backend build      # gera o build
+pnpm --filter backend typecheck  # valida tipos TypeScript sem gerar build
+pnpm --filter backend test       # executa os testes unitários
+pnpm --filter backend test:e2e   # executa os testes e2e
+pnpm --filter backend test:cov   # cobertura de testes
 ```
 
 ## Arquitetura
@@ -161,6 +162,16 @@ test/
 - DTOs de entrada usam `class-validator`.
 - Todo use case deve ter ao menos um teste unitário.
 - Siga TDD: testes passando antes de considerar a feature pronta.
+- Testes em controllers devem ser E2E e salvar no banco de dados
+- Antes de rodar qualquer teste (`pnpm --filter backend test`, `pnpm --filter backend test:e2e`, `pnpm --filter backend test:cov`), execute `pnpm --filter backend typecheck` e resolva todos os erros de tipagem.
+
+## Padrão para Schemas Mongoose (TypeScript)
+
+- Em classes de schema (`@Schema()`), **não usar** `extends Document`.
+- Se precisar do `_id` tipado no document class, declarar como ` _id: MongooseSchema.Types.ObjectId`.
+- Sempre tipar explicitamente o schema exportado:
+  - `export const FeatureSchema: MongooseSchema = SchemaFactory.createForClass(FeatureDocument);`
+- Esse padrão evita conflitos de tipagem com `Document` e erros de inferência excessiva do TypeScript.
 
 ## Variáveis de Ambiente
 

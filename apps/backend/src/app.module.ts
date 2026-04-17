@@ -9,6 +9,7 @@ import { validateEnv } from './config/env';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { EquipamentModule } from './equipament/equipament.module';
+import { CoffeesModule } from './coffees/coffees.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { EquipamentModule } from './equipament/equipament.module';
     AuthModule,
     UsersModule,
     EquipamentModule,
+    CoffeesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
