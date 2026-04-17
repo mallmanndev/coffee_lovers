@@ -55,3 +55,34 @@ export const mergedEquipmentResponseSchema = equipmentResponseSchema.extend({
 export type EquipmentBase = z.infer<typeof equipmentBaseSchema>;
 export type EquipmentResponse = z.infer<typeof equipmentResponseSchema>;
 export type MergedEquipmentResponse = z.infer<typeof mergedEquipmentResponseSchema>;
+
+export const createEquipmentInputSchema = z.object({
+  equipmentId: z.string().optional(),
+  type: EquipmentTypeEnum,
+  name: z.string().min(1),
+  model: z.string().min(1),
+  brand: z.string().min(1),
+  description: z.string().optional(),
+  photos: z.array(z.string()).default([]),
+  modifications: z.array(z.any()).default([]),
+  typeSpecificData: z.record(z.any()).optional(),
+});
+
+export const createEquipmentOutputSchema = z.object({
+  id: z.string(),
+  type: EquipmentTypeEnum,
+  name: z.string(),
+  model: z.string(),
+  brand: z.string(),
+  description: z.string().optional(),
+  photos: z.array(z.string()),
+  createdById: z.string(),
+  typeSpecificData: z.record(z.any()),
+  userEquipmentId: z.string(),
+  modifications: z.array(z.any()),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+export type CreateEquipmentInput = z.infer<typeof createEquipmentInputSchema>;
+export type CreateEquipmentOutput = z.infer<typeof createEquipmentOutputSchema>;

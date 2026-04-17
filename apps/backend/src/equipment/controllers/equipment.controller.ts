@@ -3,7 +3,7 @@ import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
 import { equipmentContract } from '@coffee-lovers/shared';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../../auth/decorators/current-user.decorator';
-import { AddUserEquipmentUseCase } from '../use-cases/add-user-equipment.use-case';
+import { CreateEquipmentUseCase } from '../use-cases/create-equipment.use-case';
 import { UpdateUserEquipmentUseCase } from '../use-cases/update-user-equipment.use-case';
 import { DeleteUserEquipmentUseCase } from '../use-cases/delete-user-equipment.use-case';
 import { EquipmentRepository } from '../repositories/equipment.repository';
@@ -12,7 +12,7 @@ import { UserEquipmentRepository } from '../repositories/user-equipment.reposito
 @Controller()
 export class EquipmentController {
   constructor(
-    private readonly addUserEquipmentUseCase: AddUserEquipmentUseCase,
+    private readonly createEquipmentUseCase: CreateEquipmentUseCase,
     private readonly updateUserEquipmentUseCase: UpdateUserEquipmentUseCase,
     private readonly deleteUserEquipmentUseCase: DeleteUserEquipmentUseCase,
     private readonly equipmentRepository: EquipmentRepository,
@@ -23,10 +23,10 @@ export class EquipmentController {
   @UseGuards(JwtAuthGuard)
   async create(@CurrentUser() user: { sub: string }): Promise<unknown> {
     return tsRestHandler(equipmentContract.create, async ({ body }) => {
-      const result = await this.addUserEquipmentUseCase.execute(body, user.sub);
+      const result = await this.createEquipmentUseCase.execute(body, user.sub);
       return {
         status: 201,
-        body: this.mapToMergedDto(result.equipment, result.userEquipment),
+        body: result,
       };
     });
   }

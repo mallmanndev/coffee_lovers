@@ -20,6 +20,16 @@ async function bootstrap() {
       version: '1.0.0',
       description: 'API for Coffee Lovers social network',
     },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
+    security: [{ bearerAuth: [] }],
   });
   SwaggerModule.setup('api', app, document);
 

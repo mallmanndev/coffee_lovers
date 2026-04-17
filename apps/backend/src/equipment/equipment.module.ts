@@ -9,7 +9,6 @@ import { UserEquipmentDocument, UserEquipmentSchema } from './schemas/user-equip
 import { MongooseUserEquipmentRepository } from './repositories/user-equipment.repository.impl';
 import { UserEquipmentRepository } from './repositories/user-equipment.repository';
 import { CreateEquipmentUseCase } from './use-cases/create-equipment.use-case';
-import { AddUserEquipmentUseCase } from './use-cases/add-user-equipment.use-case';
 import { UpdateUserEquipmentUseCase } from './use-cases/update-user-equipment.use-case';
 import { DeleteUserEquipmentUseCase } from './use-cases/delete-user-equipment.use-case';
 
@@ -24,7 +23,6 @@ import { DeleteUserEquipmentUseCase } from './use-cases/delete-user-equipment.us
   controllers: [EquipmentController],
   providers: [
     CreateEquipmentUseCase,
-    AddUserEquipmentUseCase,
     UpdateUserEquipmentUseCase,
     DeleteUserEquipmentUseCase,
     {

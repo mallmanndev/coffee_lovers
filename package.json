@@ -9,6 +9,7 @@
     "test": "turbo run test"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "prettier": "^3.0.0",
     "turbo": "latest"
   },

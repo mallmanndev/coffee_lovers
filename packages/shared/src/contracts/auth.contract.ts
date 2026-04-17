@@ -20,6 +20,9 @@ export const authContract = c.router({
       409: z.object({ message: z.string() }),
     },
     summary: 'Register a new user',
+    metadata: {
+      security: [],
+    },
   },
   login: {
     method: 'POST',
@@ -29,6 +32,9 @@ export const authContract = c.router({
       200: authResponseSchema,
       401: z.object({ message: z.string() }),
     },
-    summary: 'Login with email and password',
+    summary: 'Login with credentials',
+    metadata: {
+      security: [],
+    },
   },
 });

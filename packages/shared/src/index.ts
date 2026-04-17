@@ -4,10 +4,20 @@ import { equipmentContract } from './contracts/equipment.contract';
 
 const c = initContract();
 
-export const apiContract = c.router({
-  auth: authContract,
-  equipment: equipmentContract,
-});
+export const apiContract = c.router(
+  {
+    auth: authContract,
+    equipment: equipmentContract,
+  },
+  {
+    commonResponses: {
+      401: c.type<{ message: string }>(),
+    },
+    metadata: {
+      security: [{ bearerAuth: [] }],
+    },
+  },
+);
 
 export * from './schemas/auth.schema';
 export * from './contracts/auth.contract';

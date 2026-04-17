@@ -4,6 +4,8 @@ import {
   equipmentBaseSchema,
   equipmentResponseSchema,
   mergedEquipmentResponseSchema,
+  createEquipmentInputSchema,
+  createEquipmentOutputSchema,
 } from '../schemas/equipment.schema';
 import { userEquipmentBaseSchema, userEquipmentResponseSchema } from '../schemas/user-equipment.schema';
 
@@ -13,13 +15,12 @@ export const equipmentContract = c.router({
   create: {
     method: 'POST',
     path: '/equipment',
-    body: z.object({
-      base: equipmentBaseSchema,
-      user: userEquipmentBaseSchema,
-    }),
+    body: createEquipmentInputSchema,
     responses: {
-      201: mergedEquipmentResponseSchema,
+      201: createEquipmentOutputSchema,
       401: z.object({ message: z.string() }),
+      404: z.object({ message: z.string() }),
+      409: z.object({ message: z.string() }),
     },
     summary: 'Create a new equipment in catalog and add to user collection',
   },
