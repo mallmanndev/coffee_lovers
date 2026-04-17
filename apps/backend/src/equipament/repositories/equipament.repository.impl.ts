@@ -33,8 +33,30 @@ export class MongooseEquipamentRepository implements EquipamentRepository {
     return doc ? this.mapToEntity(doc) : null;
   }
 
-  async findAll(filters?: { type?: string }): Promise<Equipament[]> {
-    const query = filters?.type ? { type: filters.type } : {};
+  async findAll(filters: {
+    type?: string;
+    text?: string;
+    userOnly?: boolean;
+    userId: string;
+  }): Promise<Equipament[]> {
+    const query: Record<string, unknown> = {};
+
+    if (filters.type) {
+      query.type = filters.type;
+    }
+
+    if (filters.text) {
+      const escapedText = filters.text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const textRegex = new RegExp(escapedText, 'i');
+      query.$or = [{ name: textRegex }, { description: textRegex }];
+    }
+
+    if (filters.userOnly) {
+      query.createdById = filters.userId;
+    } else {
+      query.createdById = { $in: [filters.userId, 'base'] };
+    }
+
     const docs = await this.equipamentModel.find(query).sort({ createdAt: -1 }).exec();
     return docs.map(doc => this.mapToEntity(doc));
   }

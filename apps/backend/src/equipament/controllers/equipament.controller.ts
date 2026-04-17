@@ -32,9 +32,15 @@ export class EquipamentController {
   }
 
   @TsRestHandler(equipamentContract.list)
-  async list(): Promise<unknown> {
+  @UseGuards(JwtAuthGuard)
+  async list(@CurrentUser() user: { sub: string }): Promise<unknown> {
     return tsRestHandler(equipamentContract.list, async ({ query }) => {
-      const equipaments = await this.equipamentRepository.findAll({ type: query.type });
+      const equipaments = await this.equipamentRepository.findAll({
+        type: query.type,
+        text: query.text,
+        userOnly: query.userOnly,
+        userId: user.sub,
+      });
       return {
         status: 200,
         body: equipaments.map((e) => this.mapEquipamentToDto(e)),

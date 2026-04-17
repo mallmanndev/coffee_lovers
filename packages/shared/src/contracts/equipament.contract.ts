@@ -29,6 +29,14 @@ export const equipamentContract = c.router({
     path: '/equipament',
     query: z.object({
       type: z.string().optional(),
+      text: z.string().optional(),
+      userOnly: z
+        .preprocess((value) => {
+          if (value === 'true') return true;
+          if (value === 'false') return false;
+          return value;
+        }, z.boolean())
+        .optional(),
     }),
     responses: {
       200: z.array(equipamentResponseSchema),

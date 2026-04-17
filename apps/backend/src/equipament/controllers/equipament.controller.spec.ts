@@ -113,13 +113,99 @@ describe('EquipamentController (Integration)', () => {
   it('GET /equipament deve listar equipamentos do catálogo', async () => {
     await equipamentModel.create([
       { type: 'GRINDER', name: 'Eq 1', model: 'M1', brand: 'B1', createdById: userId },
-      { type: 'SCALE', name: 'Eq 2', model: 'M2', brand: 'B2', createdById: userId },
+      { type: 'SCALE', name: 'Eq 2', model: 'M2', brand: 'B2', createdById: 'base' },
+      { type: 'KETTLE', name: 'Eq 3', model: 'M3', brand: 'B3', createdById: 'another-user-id' },
     ]);
 
-    const res = await request(app.getHttpServer()).get('/equipament');
+    const res = await request(app.getHttpServer())
+      .get('/equipament')
+      .set('Authorization', `Bearer ${authToken}`);
 
     expect(res.status).toBe(200);
     expect(res.body).toHaveLength(2);
+  });
+
+  it('GET /equipament deve filtrar por texto em nome e descrição', async () => {
+    await equipamentModel.create([
+      {
+        type: 'GRINDER',
+        name: 'Comandante C40',
+        model: 'MK4',
+        brand: 'Comandante',
+        description: 'Moedor premium',
+        createdById: userId,
+      },
+      {
+        type: 'SCALE',
+        name: 'Acaia Pearl',
+        model: '2021',
+        brand: 'Acaia',
+        description: 'Precisao para espresso',
+        createdById: 'base',
+      },
+      {
+        type: 'KETTLE',
+        name: 'Hario Buono',
+        model: 'V60',
+        brand: 'Hario',
+        description: 'Chaleira de bico fino',
+        createdById: userId,
+      },
+    ]);
+
+    const byName = await request(app.getHttpServer())
+      .get('/equipament')
+      .query({ text: 'comandante' })
+      .set('Authorization', `Bearer ${authToken}`);
+
+    expect(byName.status).toBe(200);
+    expect(byName.body).toHaveLength(1);
+    expect(byName.body[0].name).toBe('Comandante C40');
+
+    const byDescription = await request(app.getHttpServer())
+      .get('/equipament')
+      .query({ text: 'espresso' })
+      .set('Authorization', `Bearer ${authToken}`);
+
+    expect(byDescription.status).toBe(200);
+    expect(byDescription.body).toHaveLength(1);
+    expect(byDescription.body[0].name).toBe('Acaia Pearl');
+  });
+
+  it('GET /equipament?userOnly=true deve retornar somente equipamentos do usuário autenticado', async () => {
+    await equipamentModel.create([
+      { type: 'GRINDER', name: 'User grinder', model: 'M1', brand: 'B1', createdById: userId },
+      { type: 'SCALE', name: 'Base scale', model: 'M2', brand: 'B2', createdById: 'base' },
+      { type: 'KETTLE', name: 'Other kettle', model: 'M3', brand: 'B3', createdById: 'another-user-id' },
+    ]);
+
+    const res = await request(app.getHttpServer())
+      .get('/equipament')
+      .query({ userOnly: true })
+      .set('Authorization', `Bearer ${authToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveLength(1);
+    expect(res.body[0].name).toBe('User grinder');
+  });
+
+  it('GET /equipament com userOnly=false deve retornar somente base + usuário atual', async () => {
+    await equipamentModel.create([
+      { type: 'GRINDER', name: 'User grinder', model: 'M1', brand: 'B1', createdById: userId },
+      { type: 'SCALE', name: 'Base scale', model: 'M2', brand: 'B2', createdById: 'base' },
+      { type: 'KETTLE', name: 'Other kettle', model: 'M3', brand: 'B3', createdById: 'another-user-id' },
+    ]);
+
+    const res = await request(app.getHttpServer())
+      .get('/equipament')
+      .query({ userOnly: false })
+      .set('Authorization', `Bearer ${authToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveLength(2);
+    const returnedNames = res.body.map((item: { name: string }) => item.name);
+    expect(returnedNames).toEqual(expect.arrayContaining(['User grinder', 'Base scale']));
+    expect(returnedNames).not.toContain('Other kettle');
   });
 
   it('GET /equipament/:id deve retornar detalhes e posse do usuário', async () => {
@@ -142,7 +228,7 @@ describe('EquipamentController (Integration)', () => {
     
     await userEquipamentModel.create({
       userId,
-      equipamentId: eq._id,
+      equipamentId: eq._id.toString(),
       description: 'Old desc',
     });
 
@@ -156,7 +242,7 @@ describe('EquipamentController (Integration)', () => {
     expect(res.status).toBe(200);
     expect(res.body.description).toBe('New description');
 
-    const updated = await userEquipamentModel.findOne({ userId, equipamentId: eq._id });
+    const updated = await userEquipamentModel.findOne({ userId, equipamentId: eq._id.toString() });
     expect(updated!.description).toBe('New description');
   });
 
@@ -165,7 +251,7 @@ describe('EquipamentController (Integration)', () => {
       type: 'GRINDER', name: 'To Delete', model: 'M', brand: 'B', createdById: userId
     });
     
-    await userEquipamentModel.create({ userId, equipamentId: eq._id });
+    await userEquipamentModel.create({ userId, equipamentId: eq._id.toString() });
 
     const res = await request(app.getHttpServer())
       .delete(`/equipament/${eq._id}`)
@@ -174,7 +260,7 @@ describe('EquipamentController (Integration)', () => {
 
     expect(res.status).toBe(204);
 
-    const exists = await userEquipamentModel.findOne({ userId, equipamentId: eq._id });
+    const exists = await userEquipamentModel.findOne({ userId, equipamentId: eq._id.toString() });
     expect(exists).toBeNull();
   });
 });
