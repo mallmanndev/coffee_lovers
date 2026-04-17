@@ -31,10 +31,12 @@ const makeValidProps = (): CoffeeProps => ({
 describe('Coffee Entity', () => {
   it('should create a coffee entity with valid payload', () => {
     const coffee = Coffee.create(makeValidProps());
+    const sensoryProfile = coffee.getSensoryProfile();
 
     expect(coffee.getCoffeeName()).toBe('Geisha Reserve');
     expect(coffee.getUserId()).toBe('user-1');
-    expect(coffee.getSensoryProfile().sca_score).toBe(89);
+    expect(sensoryProfile).not.toBeNull();
+    expect(sensoryProfile?.sca_score).toBe(89);
   });
 
   it('should reject empty required text fields', () => {
@@ -50,7 +52,7 @@ describe('Coffee Entity', () => {
     expect(() => Coffee.create(invalidAltitude)).toThrow(BadRequestException);
 
     const invalidSca = makeValidProps();
-    invalidSca.sensory_profile.sca_score = 120;
+    invalidSca.sensory_profile!.sca_score = 120;
     expect(() => Coffee.create(invalidSca)).toThrow(BadRequestException);
   });
 });

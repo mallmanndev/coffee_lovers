@@ -16,7 +16,14 @@ describe('CreateEquipamentUseCase', () => {
     create: jest.fn().mockImplementation((equipament: Equipament) =>
       Promise.resolve(
         Equipament.create({
-          ...equipament,
+          type: equipament.getType(),
+          name: equipament.getName(),
+          model: equipament.getModel(),
+          brand: equipament.getBrand(),
+          description: equipament.getDescription() || undefined,
+          photos: equipament.getPhotos(),
+          createdById: equipament.getCreatedById(),
+          typeSpecificData: equipament.getTypeSpecificData(),
           id: 'base-id',
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -30,7 +37,12 @@ describe('CreateEquipamentUseCase', () => {
     create: jest.fn().mockImplementation((ue: UserEquipament) =>
       Promise.resolve(
         UserEquipament.create({
-          ...ue,
+          equipamentId: ue.getEquipamentId(),
+          userId: ue.getUserId(),
+          description: ue.getDescription() || undefined,
+          modifications: ue.getModifications(),
+          photos: ue.getPhotos(),
+          typeSpecificData: ue.getTypeSpecificData(),
           id: 'user-eq-id',
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -120,6 +132,8 @@ describe('CreateEquipamentUseCase', () => {
       name: '',
       model: '',
       brand: '',
+      photos: [],
+      modifications: [],
     };
     mockEquipamentRepository.findById.mockResolvedValue(null);
 
@@ -142,6 +156,8 @@ describe('CreateEquipamentUseCase', () => {
       name: '',
       model: '',
       brand: '',
+      photos: [],
+      modifications: [],
     };
 
     mockEquipamentRepository.findById.mockResolvedValue(existingBase);
