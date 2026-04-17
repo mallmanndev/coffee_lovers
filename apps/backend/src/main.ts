@@ -3,7 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule } from '@nestjs/swagger';
 import { generateOpenApi } from '@ts-rest/open-api';
-import { authContract } from '@coffee-lovers/shared';
+import { apiContract } from '@coffee-lovers/shared';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -14,7 +14,7 @@ async function bootstrap() {
     transform: true,
   }));
 
-  const document = generateOpenApi(authContract, {
+  const document = generateOpenApi(apiContract, {
     info: {
       title: 'Coffee Lovers API',
       version: '1.0.0',

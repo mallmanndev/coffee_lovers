@@ -27,6 +27,7 @@
     "@nestjs/jwt": "^11.0.2",
     "@nestjs/mongoose": "^11.0.4",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/serve-static": "^5.0.5",
     "@nestjs/swagger": "^8.0.0",
     "@ts-rest/nest": "^3.51.0",
     "@ts-rest/open-api": "^3.51.0",
