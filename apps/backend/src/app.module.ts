@@ -10,6 +10,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { EquipamentModule } from './equipament/equipament.module';
 import { CoffeesModule } from './coffees/coffees.module';
+import { StockModule } from './stock/stock.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { CoffeesModule } from './coffees/coffees.module';
     UsersModule,
     EquipamentModule,
     CoffeesModule,
+    StockModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -31,6 +31,16 @@ export class MongooseCoffeeRepository implements CoffeeRepository {
     return this.mapToEntity(doc);
   }
 
+  async findByIdAndUserId(id: string, userId: string): Promise<Coffee | null> {
+    const doc = await this.coffeeModel
+      .findOne({ _id: id as any, userId })
+      .exec();
+    if (!doc) {
+      return null;
+    }
+    return this.mapToEntity(doc);
+  }
+
   private mapToEntity(doc: CoffeeDocument): Coffee {
     const processing = doc.processing
       ? {
