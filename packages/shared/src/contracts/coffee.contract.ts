@@ -15,4 +15,16 @@ export const coffeeContract = c.router({
     },
     summary: 'Create a coffee registry entry',
   },
+  list: {
+    method: 'GET',
+    path: '/coffee',
+    query: z.object({
+      search: z.string().optional(),
+    }),
+    responses: {
+      200: z.array(createCoffeeOutputSchema),
+      401: z.object({ message: z.string() }),
+    },
+    summary: 'List coffees for the authenticated user',
+  },
 });

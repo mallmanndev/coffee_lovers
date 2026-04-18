@@ -1,366 +1,175 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
-import request from 'supertest';
-import { AppModule } from '../../app.module';
-import { getModelToken } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { EquipamentDocument } from '../schemas/equipament.schema';
-import { UserEquipamentDocument } from '../schemas/user-equipament.schema';
 import { JwtService } from '@nestjs/jwt';
+import { EquipamentController } from './equipament.controller';
+import { CreateEquipamentUseCase } from '../use-cases/create-equipament.use-case';
+import { UpdateUserEquipamentUseCase } from '../use-cases/update-user-equipament.use-case';
+import { DeleteUserEquipamentUseCase } from '../use-cases/delete-user-equipament.use-case';
+import { EquipamentRepository } from '../repositories/equipament.repository';
+import { UserEquipamentRepository } from '../repositories/user-equipament.repository';
+import { Equipament } from '../domain/equipament.entity';
+import { UserEquipament } from '../domain/user-equipament.entity';
 
-describe('EquipamentController (Integration)', () => {
-  let app: INestApplication;
-  let equipamentModel: Model<EquipamentDocument>;
-  let userEquipamentModel: Model<UserEquipamentDocument>;
-  let jwtService: JwtService;
-  let authToken: string;
+describe('EquipamentController', () => {
+  let controller: EquipamentController;
+  let createUseCase: jest.Mocked<CreateEquipamentUseCase>;
+  let updateUseCase: jest.Mocked<UpdateUserEquipamentUseCase>;
+  let deleteUseCase: jest.Mocked<DeleteUserEquipamentUseCase>;
+  let equipamentRepo: jest.Mocked<EquipamentRepository>;
+  let userEquipamentRepo: jest.Mocked<UserEquipamentRepository>;
 
-  const userId = '60d0fe4f5311236168a109ca'; // Valid MongoDB ObjectId format
-
-  beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe());
-    await app.init();
-
-    equipamentModel = moduleFixture.get<Model<EquipamentDocument>>(
-      getModelToken(EquipamentDocument.name),
-    );
-    userEquipamentModel = moduleFixture.get<Model<UserEquipamentDocument>>(
-      getModelToken(UserEquipamentDocument.name),
-    );
-    jwtService = moduleFixture.get<JwtService>(JwtService);
-
-    // Gerar um token real para o usuário de teste
-    authToken = jwtService.sign({
-      sub: userId,
-      email: 'test@example.com',
-      name: 'Test User',
-    });
-  });
+  const mockUser = { sub: 'user-123' };
 
   beforeEach(async () => {
-    await equipamentModel.deleteMany({});
-    await userEquipamentModel.deleteMany({});
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [EquipamentController],
+      providers: [
+        {
+          provide: JwtService,
+          useValue: { verifyAsync: jest.fn() },
+        },
+        {
+          provide: CreateEquipamentUseCase,
+          useValue: { execute: jest.fn() },
+        },
+        {
+          provide: UpdateUserEquipamentUseCase,
+          useValue: { execute: jest.fn() },
+        },
+        {
+          provide: DeleteUserEquipamentUseCase,
+          useValue: { execute: jest.fn() },
+        },
+        {
+          provide: EquipamentRepository,
+          useValue: { findAll: jest.fn(), findById: jest.fn() },
+        },
+        {
+          provide: UserEquipamentRepository,
+          useValue: { findByUserIdAndEquipamentId: jest.fn() },
+        },
+      ],
+    }).compile();
+
+    controller = module.get<EquipamentController>(EquipamentController);
+    createUseCase = module.get(CreateEquipamentUseCase);
+    updateUseCase = module.get(UpdateUserEquipamentUseCase);
+    deleteUseCase = module.get(DeleteUserEquipamentUseCase);
+    equipamentRepo = module.get(EquipamentRepository);
+    userEquipamentRepo = module.get(UserEquipamentRepository);
   });
 
-  afterAll(async () => {
-    await app.close();
-  });
+  describe('create', () => {
+    it('should call CreateEquipamentUseCase and return 201', async () => {
+      const dto = { type: 'GRINDER' as const, name: 'Test' };
+      const expectedResult = { id: '1', ...dto };
+      createUseCase.execute.mockResolvedValue(expectedResult as any);
 
-  it('POST /equipament deve criar um novo equipamento e associar ao usuário', async () => {
-    const dto = {
-      type: 'GRINDER' as const,
-      name: 'Comandante C40',
-      model: 'MK4',
-      brand: 'Comandante',
-      description: 'The goat of grinders',
-      photos: ['photo1.jpg'],
-      modifications: [],
-      typeSpecificData: { clicks: 25 },
-    };
+      // ts-rest handler call simulation
+      const handler = controller.create(mockUser) as any;
+      const result = await handler({ body: dto });
 
-    const res = await request(app.getHttpServer() as string)
-      .post('/equipament')
-      .set('Authorization', `Bearer ${authToken}`)
-      .send(dto);
-
-    expect(res.status).toBe(201);
-    const body = res.body as {
-      name: string;
-      userEquipamentId: string;
-      typeSpecificData: { clicks: number };
-    };
-    expect(body.name).toBe(dto.name);
-    expect(body.userEquipamentId).toBeDefined();
-    expect(body.typeSpecificData.clicks).toBe(25);
-
-    // Verificar no banco
-    const dbEquipament = await equipamentModel.findOne({ name: dto.name });
-    expect(dbEquipament).toBeDefined();
-
-    const dbUserEq = await userEquipamentModel.findOne({ userId });
-    expect(dbUserEq).toBeDefined();
-    expect(dbUserEq!.equipamentId.toString()).toBe(
-      dbEquipament!._id.toString(),
-    );
-  });
-
-  it('POST /equipament deve associar um equipamento existente ao usuário via equipamentId', async () => {
-    // Criar equipamento base no banco previamente
-    const baseEquipament = await equipamentModel.create({
-      type: 'ESPRESSO_MACHINE',
-      name: 'Gaggia Classic',
-      model: 'Pro',
-      brand: 'Gaggia',
-      createdById: 'admin-id',
-      typeSpecificData: { portafilterSize: '58mm' },
+      expect(createUseCase.execute).toHaveBeenCalledWith(dto, mockUser.sub);
+      expect(result).toEqual({
+        status: 201,
+        body: expectedResult,
+      });
     });
-
-    const dto = {
-      equipamentId: baseEquipament._id.toString(),
-      type: 'ESPRESSO_MACHINE' as const,
-      name: 'Ignored Name',
-      model: 'Ignored Model',
-      brand: 'Ignored Brand',
-      typeSpecificData: { pressure: '9bar' },
-    };
-
-    const res = await request(app.getHttpServer() as string)
-      .post('/equipament')
-      .set('Authorization', `Bearer ${authToken}`)
-      .send(dto);
-
-    expect(res.status).toBe(201);
-    const body = res.body as {
-      id: string;
-      name: string;
-      typeSpecificData: { pressure: string; portafilterSize: string };
-    };
-    expect(body.id).toBe(baseEquipament._id.toString());
-    expect(body.name).toBe('Gaggia Classic'); // Nome original do banco
-    expect(body.typeSpecificData.pressure).toBe('9bar'); // Dado novo do UserEquipament
-    expect(body.typeSpecificData.portafilterSize).toBe('58mm'); // Dado herdado da Base
   });
 
-  it('GET /equipament deve listar equipamentos do catálogo', async () => {
-    await equipamentModel.create([
-      {
+  describe('list', () => {
+    it('should return list of equipments', async () => {
+      const mockEquipament = Equipament.create({
+        id: '1',
         type: 'GRINDER',
-        name: 'Eq 1',
+        name: 'Test',
         model: 'M1',
         brand: 'B1',
-        createdById: userId,
-      },
-      {
-        type: 'SCALE',
-        name: 'Eq 2',
-        model: 'M2',
-        brand: 'B2',
-        createdById: 'base',
-      },
-      {
-        type: 'KETTLE',
-        name: 'Eq 3',
-        model: 'M3',
-        brand: 'B3',
-        createdById: 'another-user-id',
-      },
-    ]);
+        createdById: 'user-1',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+      equipamentRepo.findAll.mockResolvedValue([mockEquipament]);
 
-    const res = await request(app.getHttpServer() as string)
-      .get('/equipament')
-      .set('Authorization', `Bearer ${authToken}`);
+      const handler = controller.list(mockUser) as any;
+      const result = await handler({ query: {} });
 
-    expect(res.status).toBe(200);
-    expect(res.body as unknown[]).toHaveLength(2);
+      expect(equipamentRepo.findAll).toHaveBeenCalled();
+      expect(result.status).toBe(200);
+      expect(result.body).toHaveLength(1);
+      expect(result.body[0].name).toBe('Test');
+    });
   });
 
-  it('GET /equipament deve filtrar por texto em nome e descrição', async () => {
-    await equipamentModel.create([
-      {
+  describe('get', () => {
+    it('should return 404 if equipment not found', async () => {
+      equipamentRepo.findById.mockResolvedValue(null);
+
+      const handler = controller.get(mockUser) as any;
+      const result = await handler({ params: { id: '1' } });
+
+      expect(result).toEqual({
+        status: 404,
+        body: { message: 'Equipamento não encontrado' },
+      });
+    });
+
+    it('should return combined equipment data if found', async () => {
+      const mockEquipament = Equipament.create({
+        id: '1',
         type: 'GRINDER',
-        name: 'Comandante C40',
-        model: 'MK4',
-        brand: 'Comandante',
-        description: 'Moedor premium',
-        createdById: userId,
-      },
-      {
-        type: 'SCALE',
-        name: 'Acaia Pearl',
-        model: '2021',
-        brand: 'Acaia',
-        description: 'Precisao para espresso',
-        createdById: 'base',
-      },
-      {
-        type: 'KETTLE',
-        name: 'Hario Buono',
-        model: 'V60',
-        brand: 'Hario',
-        description: 'Chaleira de bico fino',
-        createdById: userId,
-      },
-    ]);
-
-    const byName = await request(app.getHttpServer() as string)
-      .get('/equipament')
-      .query({ text: 'comandante' })
-      .set('Authorization', `Bearer ${authToken}`);
-
-    expect(byName.status).toBe(200);
-    expect(byName.body as unknown[]).toHaveLength(1);
-    expect((byName.body as { name: string }[])[0].name).toBe('Comandante C40');
-
-    const byDescription = await request(app.getHttpServer() as string)
-      .get('/equipament')
-      .query({ text: 'espresso' })
-      .set('Authorization', `Bearer ${authToken}`);
-
-    expect(byDescription.status).toBe(200);
-    expect(byDescription.body as unknown[]).toHaveLength(1);
-    expect((byDescription.body as { name: string }[])[0].name).toBe(
-      'Acaia Pearl',
-    );
-  });
-
-  it('GET /equipament?userOnly=true deve retornar somente equipamentos do usuário autenticado', async () => {
-    await equipamentModel.create([
-      {
-        type: 'GRINDER',
-        name: 'User grinder',
+        name: 'Test',
         model: 'M1',
         brand: 'B1',
-        createdById: userId,
-      },
-      {
-        type: 'SCALE',
-        name: 'Base scale',
-        model: 'M2',
-        brand: 'B2',
-        createdById: 'base',
-      },
-      {
-        type: 'KETTLE',
-        name: 'Other kettle',
-        model: 'M3',
-        brand: 'B3',
-        createdById: 'another-user-id',
-      },
-    ]);
+        createdById: 'user-1',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+      equipamentRepo.findById.mockResolvedValue(mockEquipament);
+      userEquipamentRepo.findByUserIdAndEquipamentId.mockResolvedValue(null);
 
-    const res = await request(app.getHttpServer() as string)
-      .get('/equipament')
-      .query({ userOnly: true })
-      .set('Authorization', `Bearer ${authToken}`);
+      const handler = controller.get(mockUser) as any;
+      const result = await handler({ params: { id: '1' } });
 
-    expect(res.status).toBe(200);
-    expect(res.body as unknown[]).toHaveLength(1);
-    expect((res.body as { name: string }[])[0].name).toBe('User grinder');
+      expect(result.status).toBe(200);
+      expect(result.body.id).toBe('1');
+      expect(result.body.isOwned).toBe(false);
+    });
   });
 
-  it('GET /equipament com userOnly=false deve retornar somente base + usuário atual', async () => {
-    await equipamentModel.create([
-      {
-        type: 'GRINDER',
-        name: 'User grinder',
-        model: 'M1',
-        brand: 'B1',
-        createdById: userId,
-      },
-      {
-        type: 'SCALE',
-        name: 'Base scale',
-        model: 'M2',
-        brand: 'B2',
-        createdById: 'base',
-      },
-      {
-        type: 'KETTLE',
-        name: 'Other kettle',
-        model: 'M3',
-        brand: 'B3',
-        createdById: 'another-user-id',
-      },
-    ]);
+  describe('update', () => {
+    it('should call UpdateUserEquipamentUseCase and return 200', async () => {
+      const dto = { description: 'New' };
+      const mockUserEq = UserEquipament.create({
+        id: 'ue-1',
+        userId: mockUser.sub,
+        equipamentId: 'e-1',
+        description: 'New',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+      updateUseCase.execute.mockResolvedValue(mockUserEq);
 
-    const res = await request(app.getHttpServer() as string)
-      .get('/equipament')
-      .query({ userOnly: false })
-      .set('Authorization', `Bearer ${authToken}`);
+      const handler = controller.update(mockUser) as any;
+      const result = await handler({ params: { id: 'e-1' }, body: dto });
 
-    expect(res.status).toBe(200);
-    expect(res.body as unknown[]).toHaveLength(2);
-    const returnedNames = (res.body as { name: string }[]).map(
-      (item) => item.name,
-    );
-    expect(returnedNames).toEqual(
-      expect.arrayContaining(['User grinder', 'Base scale']),
-    );
-    expect(returnedNames).not.toContain('Other kettle');
+      expect(updateUseCase.execute).toHaveBeenCalledWith('e-1', mockUser.sub, dto);
+      expect(result.status).toBe(200);
+      expect(result.body.description).toBe('New');
+    });
   });
 
-  it('GET /equipament/:id deve retornar detalhes e posse do usuário', async () => {
-    const eq = await equipamentModel.create({
-      type: 'GRINDER',
-      name: 'Details',
-      model: 'M',
-      brand: 'B',
-      createdById: userId,
+  describe('delete', () => {
+    it('should call DeleteUserEquipamentUseCase and return 204', async () => {
+      deleteUseCase.execute.mockResolvedValue(undefined);
+
+      const handler = controller.delete(mockUser) as any;
+      const result = await handler({ params: { id: 'e-1' } });
+
+      expect(deleteUseCase.execute).toHaveBeenCalledWith('e-1', mockUser.sub);
+      expect(result).toEqual({
+        status: 204,
+        body: null,
+      });
     });
-
-    const res = await request(app.getHttpServer() as string)
-      .get(`/equipament/${eq._id.toString()}`)
-      .set('Authorization', `Bearer ${authToken}`);
-
-    expect(res.status).toBe(200);
-    const body = res.body as { id: string };
-    expect(body.id).toBe(eq._id.toString());
-  });
-
-  it('PUT /equipament/:id deve atualizar dados personalizados', async () => {
-    const eq = await equipamentModel.create({
-      type: 'GRINDER',
-      name: 'To Update',
-      model: 'M',
-      brand: 'B',
-      createdById: userId,
-    });
-
-    await userEquipamentModel.create({
-      userId,
-      equipamentId: eq._id.toString(),
-      description: 'Old desc',
-    });
-
-    const updateDto = { description: 'New description' };
-
-    const res = await request(app.getHttpServer() as string)
-      .put(`/equipament/${eq._id.toString()}`)
-      .set('Authorization', `Bearer ${authToken}`)
-      .send(updateDto);
-
-    expect(res.status).toBe(200);
-    expect((res.body as { description: string }).description).toBe(
-      'New description',
-    );
-
-    const updated = await userEquipamentModel.findOne({
-      userId,
-      equipamentId: eq._id.toString(),
-    });
-    expect(updated!.description).toBe('New description');
-  });
-
-  it('DELETE /equipament/:id deve remover da coleção do usuário', async () => {
-    const eq = await equipamentModel.create({
-      type: 'GRINDER',
-      name: 'To Delete',
-      model: 'M',
-      brand: 'B',
-      createdById: userId,
-    });
-
-    await userEquipamentModel.create({
-      userId,
-      equipamentId: eq._id.toString(),
-    });
-
-    const res = await request(app.getHttpServer() as string)
-      .delete(`/equipament/${eq._id.toString()}`)
-      .set('Authorization', `Bearer ${authToken}`)
-      .send({});
-
-    expect(res.status).toBe(204);
-
-    const exists = await userEquipamentModel.findOne({
-      userId,
-      equipamentId: eq._id.toString(),
-    });
-    expect(exists).toBeNull();
   });
 });

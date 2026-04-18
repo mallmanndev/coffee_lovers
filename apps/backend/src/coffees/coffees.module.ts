@@ -6,6 +6,8 @@ import { CreateCoffeeUseCase } from './use-cases/create-coffee.use-case';
 import { CoffeeRepository } from './repositories/coffee.repository';
 import { MongooseCoffeeRepository } from './repositories/coffee.repository.impl';
 import { CoffeeDocument, CoffeeSchema } from './schemas/coffee.schema';
+import { COFFEE_DAO } from './daos/coffee.dao';
+import { CoffeeDaoImpl } from './daos/coffee.dao.impl';
 
 @Module({
   imports: [
@@ -21,7 +23,11 @@ import { CoffeeDocument, CoffeeSchema } from './schemas/coffee.schema';
       provide: CoffeeRepository,
       useClass: MongooseCoffeeRepository,
     },
+    {
+      provide: COFFEE_DAO,
+      useClass: CoffeeDaoImpl,
+    },
   ],
-  exports: [CoffeeRepository],
+  exports: [CoffeeRepository, COFFEE_DAO],
 })
 export class CoffeesModule {}
