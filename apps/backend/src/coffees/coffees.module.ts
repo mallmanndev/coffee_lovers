@@ -10,7 +10,9 @@ import { CoffeeDocument, CoffeeSchema } from './schemas/coffee.schema';
 @Module({
   imports: [
     TsRestModule.register({}),
-    MongooseModule.forFeature([{ name: CoffeeDocument.name, schema: CoffeeSchema }]),
+    MongooseModule.forFeature([
+      { name: CoffeeDocument.name, schema: CoffeeSchema },
+    ]),
   ],
   controllers: [CoffeesController],
   providers: [

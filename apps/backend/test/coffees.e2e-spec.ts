@@ -42,22 +42,27 @@ describe('Coffees (e2e)', () => {
 
   beforeAll(async () => {
     process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-secret';
-    process.env.MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/coffee_lovers_test';
+    process.env.MONGODB_URI =
+      process.env.MONGODB_URI || 'mongodb://localhost:27017/coffee_lovers_test';
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-    }));
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
+    );
     await app.init();
 
     jwtService = moduleFixture.get<JwtService>(JwtService);
-    coffeeModel = moduleFixture.get<Model<CoffeeDocument>>(getModelToken(CoffeeDocument.name));
+    coffeeModel = moduleFixture.get<Model<CoffeeDocument>>(
+      getModelToken(CoffeeDocument.name),
+    );
   });
 
   beforeEach(async () => {
@@ -87,12 +92,17 @@ describe('Coffees (e2e)', () => {
     expect(res.body.createdAt).toBeDefined();
     expect(res.body.updatedAt).toBeDefined();
 
-    const inDb = await coffeeModel.findOne({ coffee_name: payload.coffee_name, userId });
+    const inDb = await coffeeModel.findOne({
+      coffee_name: payload.coffee_name,
+      userId,
+    });
     expect(inDb).toBeTruthy();
   });
 
   it('POST /coffee should return 401 without token', async () => {
-    const res = await request(app.getHttpServer()).post('/coffee').send(payload);
+    const res = await request(app.getHttpServer())
+      .post('/coffee')
+      .send(payload);
 
     expect(res.status).toBe(401);
   });

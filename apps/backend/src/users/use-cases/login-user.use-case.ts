@@ -18,7 +18,10 @@ export class LoginUserUseCase {
       throw new UnauthorizedException('E-mail ou senha inválidos');
     }
 
-    const isPasswordValid = await bcrypt.compare(dto.password, user.getPasswordHash());
+    const isPasswordValid = await bcrypt.compare(
+      dto.password,
+      user.getPasswordHash(),
+    );
     if (!isPasswordValid) {
       throw new UnauthorizedException('E-mail ou senha inválidos');
     }

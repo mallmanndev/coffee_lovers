@@ -56,13 +56,19 @@ describe('CreateEquipamentUseCase', () => {
       providers: [
         CreateEquipamentUseCase,
         { provide: EquipamentRepository, useValue: mockEquipamentRepository },
-        { provide: UserEquipamentRepository, useValue: mockUserEquipamentRepository },
+        {
+          provide: UserEquipamentRepository,
+          useValue: mockUserEquipamentRepository,
+        },
       ],
     }).compile();
 
     useCase = module.get<CreateEquipamentUseCase>(CreateEquipamentUseCase);
-    equipamentRepository = module.get<EquipamentRepository>(EquipamentRepository);
-    userEquipamentRepository = module.get<UserEquipamentRepository>(UserEquipamentRepository);
+    equipamentRepository =
+      module.get<EquipamentRepository>(EquipamentRepository);
+    userEquipamentRepository = module.get<UserEquipamentRepository>(
+      UserEquipamentRepository,
+    );
   });
 
   afterEach(() => {
@@ -82,7 +88,9 @@ describe('CreateEquipamentUseCase', () => {
     };
     const userId = 'user-123';
 
-    mockUserEquipamentRepository.findByUserIdAndEquipamentId.mockResolvedValue(null);
+    mockUserEquipamentRepository.findByUserIdAndEquipamentId.mockResolvedValue(
+      null,
+    );
 
     const result = await useCase.execute(dto, userId);
 
@@ -115,7 +123,9 @@ describe('CreateEquipamentUseCase', () => {
     const userId = 'user-123';
 
     mockEquipamentRepository.findById.mockResolvedValue(existingBase);
-    mockUserEquipamentRepository.findByUserIdAndEquipamentId.mockResolvedValue(null);
+    mockUserEquipamentRepository.findByUserIdAndEquipamentId.mockResolvedValue(
+      null,
+    );
 
     const result = await useCase.execute(dto, userId);
 
@@ -137,7 +147,9 @@ describe('CreateEquipamentUseCase', () => {
     };
     mockEquipamentRepository.findById.mockResolvedValue(null);
 
-    await expect(useCase.execute(dto, 'user-123')).rejects.toThrow(NotFoundException);
+    await expect(useCase.execute(dto, 'user-123')).rejects.toThrow(
+      NotFoundException,
+    );
   });
 
   it('should throw ConflictException if user already owns the equipament', async () => {
@@ -161,9 +173,12 @@ describe('CreateEquipamentUseCase', () => {
     };
 
     mockEquipamentRepository.findById.mockResolvedValue(existingBase);
-    mockUserEquipamentRepository.findByUserIdAndEquipamentId.mockResolvedValue({ id: 'any' });
+    mockUserEquipamentRepository.findByUserIdAndEquipamentId.mockResolvedValue({
+      id: 'any',
+    });
 
-    await expect(useCase.execute(dto, 'user-123')).rejects.toThrow(ConflictException);
+    await expect(useCase.execute(dto, 'user-123')).rejects.toThrow(
+      ConflictException,
+    );
   });
 });
-

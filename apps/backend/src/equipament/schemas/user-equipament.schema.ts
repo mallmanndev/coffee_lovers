@@ -27,11 +27,13 @@ export class UserEquipamentDocument extends Document {
   photos: string[];
 
   @Prop({ type: MongooseSchema.Types.Mixed, default: {} })
-  typeSpecificData: Record<string, any>;
+  typeSpecificData: Record<string, unknown>;
 
   createdAt: Date;
   updatedAt: Date;
 }
 
-export const UserEquipamentSchema = SchemaFactory.createForClass(UserEquipamentDocument);
+export const UserEquipamentSchema = SchemaFactory.createForClass(
+  UserEquipamentDocument,
+);
 UserEquipamentSchema.index({ userId: 1, equipamentId: 1 }, { unique: true });

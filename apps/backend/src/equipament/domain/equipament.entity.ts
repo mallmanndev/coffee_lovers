@@ -43,15 +43,37 @@ export class Equipament {
     );
   }
 
-  getId(): string | null { return this.id; }
-  getType(): string { return this.type; }
-  getName(): string { return this.name; }
-  getModel(): string { return this.model; }
-  getBrand(): string { return this.brand; }
-  getDescription(): string | null { return this.description; }
-  getPhotos(): string[] { return this.photos; }
-  getCreatedById(): string { return this.createdById; }
-  getTypeSpecificData(): Record<string, any> { return this.typeSpecificData; }
-  getCreatedAt(): Date { return this.createdAt; }
-  getUpdatedAt(): Date { return this.updatedAt; }
+  getId(): string | null {
+    return this.id;
+  }
+  getType(): string {
+    return this.type;
+  }
+  getName(): string {
+    return this.name;
+  }
+  getModel(): string {
+    return this.model;
+  }
+  getBrand(): string {
+    return this.brand;
+  }
+  getDescription(): string | null {
+    return this.description;
+  }
+  getPhotos(): string[] {
+    return this.photos;
+  }
+  getCreatedById(): string {
+    return this.createdById;
+  }
+  getTypeSpecificData(): Record<string, any> {
+    return this.typeSpecificData;
+  }
+  getCreatedAt(): Date {
+    return this.createdAt;
+  }
+  getUpdatedAt(): Date {
+    return this.updatedAt;
+  }
 }

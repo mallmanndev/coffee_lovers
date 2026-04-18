@@ -7,7 +7,10 @@ import { CoffeeRepository } from '../repositories/coffee.repository';
 export class CreateCoffeeUseCase {
   constructor(private readonly coffeeRepository: CoffeeRepository) {}
 
-  async execute(dto: CreateCoffeeInput, userId: string): Promise<CreateCoffeeOutput> {
+  async execute(
+    dto: CreateCoffeeInput,
+    userId: string,
+  ): Promise<CreateCoffeeOutput> {
     const coffee = Coffee.create({
       ...dto,
       userId,

@@ -4,7 +4,7 @@ import { Document, Schema as MongooseSchema } from 'mongoose';
 @Schema({ timestamps: true, collection: 'equipament' })
 export class EquipamentDocument {
   _id: MongooseSchema.Types.ObjectId;
-  
+
   @Prop({ required: true, index: true })
   type: string;
 
@@ -27,10 +27,11 @@ export class EquipamentDocument {
   createdById: string;
 
   @Prop({ type: MongooseSchema.Types.Mixed, default: {} })
-  typeSpecificData: Record<string, any>;
+  typeSpecificData: Record<string, unknown>;
 
   createdAt: Date;
   updatedAt: Date;
 }
 
-export const EquipamentSchema: MongooseSchema = SchemaFactory.createForClass(EquipamentDocument);
+export const EquipamentSchema: MongooseSchema =
+  SchemaFactory.createForClass(EquipamentDocument);

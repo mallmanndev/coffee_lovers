@@ -31,22 +31,29 @@ export class MongooseUserEquipamentRepository implements UserEquipamentRepositor
     return doc ? this.mapToEntity(doc) : null;
   }
 
-  async findByUserIdAndEquipamentId(userId: string, equipamentId: string): Promise<UserEquipament | null> {
-    const doc = await this.userEquipamentModel.findOne({ userId, equipamentId }).exec();
+  async findByUserIdAndEquipamentId(
+    userId: string,
+    equipamentId: string,
+  ): Promise<UserEquipament | null> {
+    const doc = await this.userEquipamentModel
+      .findOne({ userId, equipamentId })
+      .exec();
     return doc ? this.mapToEntity(doc) : null;
   }
 
   async update(userEquipament: UserEquipament): Promise<UserEquipament> {
-    const doc = await this.userEquipamentModel.findByIdAndUpdate(
-      userEquipament.getId(),
-      {
-        description: userEquipament.getDescription(),
-        modifications: userEquipament.getModifications(),
-        photos: userEquipament.getPhotos(),
-        typeSpecificData: userEquipament.getTypeSpecificData(),
-      },
-      { new: true }
-    ).exec();
+    const doc = await this.userEquipamentModel
+      .findByIdAndUpdate(
+        userEquipament.getId(),
+        {
+          description: userEquipament.getDescription(),
+          modifications: userEquipament.getModifications(),
+          photos: userEquipament.getPhotos(),
+          typeSpecificData: userEquipament.getTypeSpecificData(),
+        },
+        { new: true },
+      )
+      .exec();
 
     if (!doc) throw new Error('User equipament not found');
     return this.mapToEntity(doc);

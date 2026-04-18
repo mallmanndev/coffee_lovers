@@ -60,8 +60,14 @@ export class Coffee {
     this.validateRequiredText('userId', props.userId);
 
     if (props.altitude_meters !== undefined && props.altitude_meters !== null) {
-      if (!Number.isFinite(props.altitude_meters) || props.altitude_meters < 0 || props.altitude_meters > 10000) {
-        throw new BadRequestException('altitude_meters must be between 0 and 10000 when provided');
+      if (
+        !Number.isFinite(props.altitude_meters) ||
+        props.altitude_meters < 0 ||
+        props.altitude_meters > 10000
+      ) {
+        throw new BadRequestException(
+          'altitude_meters must be between 0 and 10000 when provided',
+        );
       }
     }
 
@@ -117,7 +123,10 @@ export class Coffee {
   }
 
   private static validateOptionalText(field: string, value?: string) {
-    if (value !== undefined && (typeof value !== 'string' || value.trim().length === 0)) {
+    if (
+      value !== undefined &&
+      (typeof value !== 'string' || value.trim().length === 0)
+    ) {
       throw new BadRequestException(`${field} cannot be empty when provided`);
     }
   }
@@ -125,13 +134,22 @@ export class Coffee {
   private static validateProcessing(processing?: CoffeeProcessing) {
     if (!processing) return;
     if (processing.processing_method !== undefined) {
-      this.validateOptionalText('processing.processing_method', processing.processing_method);
+      this.validateOptionalText(
+        'processing.processing_method',
+        processing.processing_method,
+      );
     }
     if (processing.fermentation_details !== undefined) {
-      this.validateOptionalText('processing.fermentation_details', processing.fermentation_details);
+      this.validateOptionalText(
+        'processing.fermentation_details',
+        processing.fermentation_details,
+      );
     }
     if (processing.drying_method !== undefined) {
-      this.validateOptionalText('processing.drying_method', processing.drying_method);
+      this.validateOptionalText(
+        'processing.drying_method',
+        processing.drying_method,
+      );
     }
   }
 
@@ -145,30 +163,73 @@ export class Coffee {
   private static validateSensoryProfile(sensoryProfile?: CoffeeSensoryProfile) {
     if (!sensoryProfile) return;
     this.validateOptionalText('sensory_profile.notes', sensoryProfile.notes);
-    this.validateOptionalText('sensory_profile.acidity', sensoryProfile.acidity);
+    this.validateOptionalText(
+      'sensory_profile.acidity',
+      sensoryProfile.acidity,
+    );
     this.validateOptionalText('sensory_profile.body', sensoryProfile.body);
-    this.validateOptionalText('sensory_profile.sweetness', sensoryProfile.sweetness);
+    this.validateOptionalText(
+      'sensory_profile.sweetness',
+      sensoryProfile.sweetness,
+    );
     this.validateOptionalText('sensory_profile.finish', sensoryProfile.finish);
 
-    if (sensoryProfile.sca_score !== undefined && sensoryProfile.sca_score !== null) {
-      if (!Number.isFinite(sensoryProfile.sca_score) || sensoryProfile.sca_score < 0 || sensoryProfile.sca_score > 100) {
-        throw new BadRequestException('sca_score must be between 0 and 100 when provided');
+    if (
+      sensoryProfile.sca_score !== undefined &&
+      sensoryProfile.sca_score !== null
+    ) {
+      if (
+        !Number.isFinite(sensoryProfile.sca_score) ||
+        sensoryProfile.sca_score < 0 ||
+        sensoryProfile.sca_score > 100
+      ) {
+        throw new BadRequestException(
+          'sca_score must be between 0 and 100 when provided',
+        );
       }
     }
   }
 
-  getId(): string | null { return this.id; }
-  getCoffeeName(): string { return this.coffeeName; }
-  getProducerFarm(): string | null { return this.producerFarm; }
-  getRoastery(): string { return this.roastery; }
-  getOriginCountry(): string | null { return this.originCountry; }
-  getRegion(): string | null { return this.region; }
-  getAltitudeMeters(): number | null { return this.altitudeMeters; }
-  getVariety(): string | null { return this.variety; }
-  getProcessing(): CoffeeProcessing | null { return this.processing; }
-  getRoast(): CoffeeRoast | null { return this.roast; }
-  getSensoryProfile(): CoffeeSensoryProfile | null { return this.sensoryProfile; }
-  getUserId(): string { return this.userId; }
-  getCreatedAt(): Date { return this.createdAt; }
-  getUpdatedAt(): Date { return this.updatedAt; }
+  getId(): string | null {
+    return this.id;
+  }
+  getCoffeeName(): string {
+    return this.coffeeName;
+  }
+  getProducerFarm(): string | null {
+    return this.producerFarm;
+  }
+  getRoastery(): string {
+    return this.roastery;
+  }
+  getOriginCountry(): string | null {
+    return this.originCountry;
+  }
+  getRegion(): string | null {
+    return this.region;
+  }
+  getAltitudeMeters(): number | null {
+    return this.altitudeMeters;
+  }
+  getVariety(): string | null {
+    return this.variety;
+  }
+  getProcessing(): CoffeeProcessing | null {
+    return this.processing;
+  }
+  getRoast(): CoffeeRoast | null {
+    return this.roast;
+  }
+  getSensoryProfile(): CoffeeSensoryProfile | null {
+    return this.sensoryProfile;
+  }
+  getUserId(): string {
+    return this.userId;
+  }
+  getCreatedAt(): Date {
+    return this.createdAt;
+  }
+  getUpdatedAt(): Date {
+    return this.updatedAt;
+  }
 }

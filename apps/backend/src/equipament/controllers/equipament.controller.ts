@@ -1,6 +1,10 @@
 import { Controller, UseGuards } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { equipamentContract } from '@coffee-lovers/shared';
+import {
+  equipamentContract,
+  EquipamentType,
+  UserEquipamentResponse,
+} from '@coffee-lovers/shared';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../../auth/decorators/current-user.decorator';
 import { CreateEquipamentUseCase } from '../use-cases/create-equipament.use-case';
@@ -8,6 +12,8 @@ import { UpdateUserEquipamentUseCase } from '../use-cases/update-user-equipament
 import { DeleteUserEquipamentUseCase } from '../use-cases/delete-user-equipament.use-case';
 import { EquipamentRepository } from '../repositories/equipament.repository';
 import { UserEquipamentRepository } from '../repositories/user-equipament.repository';
+import { Equipament } from '../domain/equipament.entity';
+import { UserEquipament } from '../domain/user-equipament.entity';
 
 @Controller()
 export class EquipamentController {
@@ -21,7 +27,7 @@ export class EquipamentController {
 
   @TsRestHandler(equipamentContract.create)
   @UseGuards(JwtAuthGuard)
-  async create(@CurrentUser() user: { sub: string }): Promise<unknown> {
+  create(@CurrentUser() user: { sub: string }) {
     return tsRestHandler(equipamentContract.create, async ({ body }) => {
       const result = await this.createEquipamentUseCase.execute(body, user.sub);
       return {
@@ -33,7 +39,7 @@ export class EquipamentController {
 
   @TsRestHandler(equipamentContract.list)
   @UseGuards(JwtAuthGuard)
-  async list(@CurrentUser() user: { sub: string }): Promise<unknown> {
+  list(@CurrentUser() user: { sub: string }) {
     return tsRestHandler(equipamentContract.list, async ({ query }) => {
       const equipaments = await this.equipamentRepository.findAll({
         type: query.type,
@@ -49,13 +55,17 @@ export class EquipamentController {
   }
 
   @TsRestHandler(equipamentContract.get)
-  async get(@CurrentUser() user?: { sub: string }): Promise<unknown> {
+  get(@CurrentUser() user?: { sub: string }) {
     return tsRestHandler(equipamentContract.get, async ({ params }) => {
       const equipament = await this.equipamentRepository.findById(params.id);
-      if (!equipament) return { status: 404, body: { message: 'Equipamento não encontrado' } };
+      if (!equipament)
+        return { status: 404, body: { message: 'Equipamento não encontrado' } };
 
       const userEquipament = user
-        ? await this.userEquipamentRepository.findByUserIdAndEquipamentId(user.sub, params.id)
+        ? await this.userEquipamentRepository.findByUserIdAndEquipamentId(
+            user.sub,
+            params.id,
+          )
         : null;
 
       return {
@@ -67,19 +77,26 @@ export class EquipamentController {
 
   @TsRestHandler(equipamentContract.update)
   @UseGuards(JwtAuthGuard)
-  async update(@CurrentUser() user: { sub: string }): Promise<unknown> {
-    return tsRestHandler(equipamentContract.update, async ({ params, body }) => {
-      const updated = await this.updateUserEquipamentUseCase.execute(params.id, user.sub, body);
-      return {
-        status: 200,
-        body: this.mapUserEquipamentToDto(updated),
-      };
-    });
+  update(@CurrentUser() user: { sub: string }) {
+    return tsRestHandler(
+      equipamentContract.update,
+      async ({ params, body }) => {
+        const updated = await this.updateUserEquipamentUseCase.execute(
+          params.id,
+          user.sub,
+          body,
+        );
+        return {
+          status: 200,
+          body: this.mapUserEquipamentToDto(updated),
+        };
+      },
+    );
   }
 
   @TsRestHandler(equipamentContract.delete)
   @UseGuards(JwtAuthGuard)
-  async delete(@CurrentUser() user: { sub: string }): Promise<unknown> {
+  delete(@CurrentUser() user: { sub: string }) {
     return tsRestHandler(equipamentContract.delete, async ({ params }) => {
       await this.deleteUserEquipamentUseCase.execute(params.id, user.sub);
       return {
@@ -89,10 +106,10 @@ export class EquipamentController {
     });
   }
 
-  private mapEquipamentToDto(e: any) {
+  private mapEquipamentToDto(e: Equipament) {
     return {
-      id: e.getId(),
-      type: e.getType(),
+      id: e.getId() as string,
+      type: e.getType() as EquipamentType,
       name: e.getName(),
       model: e.getModel(),
       brand: e.getBrand(),
@@ -105,9 +122,9 @@ export class EquipamentController {
     };
   }
 
-  private mapUserEquipamentToDto(ue: any) {
+  private mapUserEquipamentToDto(ue: UserEquipament): UserEquipamentResponse {
     return {
-      id: ue.getId(),
+      id: ue.getId() as string,
       equipamentId: ue.getEquipamentId(),
       userId: ue.getUserId(),
       description: ue.getDescription() || undefined,
@@ -119,28 +136,25 @@ export class EquipamentController {
     };
   }
 
-  private mapToMergedDto(e: any, ue: any | null) {
+  private mapToMergedDto(e: Equipament, ue: UserEquipament | null) {
     const equipament = this.mapEquipamentToDto(e);
 
     if (!ue) {
       return {
         ...equipament,
         isOwned: false,
+        modifications: [],
+        userPhotos: [],
       };
     }
 
     return {
       ...equipament,
-      // Se tiver no userEquipament, substitui na base
+      userEquipamentId: ue.getId() as string,
       description: ue.getDescription() || equipament.description,
-      photos: ue.getPhotos().length > 0 ? ue.getPhotos() : equipament.photos,
-      typeSpecificData:
-        Object.keys(ue.getTypeSpecificData() || {}).length > 0
-          ? ue.getTypeSpecificData()
-          : equipament.typeSpecificData,
-      // Dados extras da posse
-      userEquipamentId: ue.getId(),
       modifications: ue.getModifications(),
+      userPhotos: ue.getPhotos(),
+      userTypeSpecificData: ue.getTypeSpecificData(),
       isOwned: true,
     };
   }

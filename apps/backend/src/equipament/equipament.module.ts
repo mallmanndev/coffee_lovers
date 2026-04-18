@@ -4,8 +4,14 @@ import { TsRestModule } from '@ts-rest/nest';
 import { EquipamentController } from './controllers/equipament.controller';
 import { MongooseEquipamentRepository } from './repositories/equipament.repository.impl';
 import { EquipamentRepository } from './repositories/equipament.repository';
-import { EquipamentDocument, EquipamentSchema } from './schemas/equipament.schema';
-import { UserEquipamentDocument, UserEquipamentSchema } from './schemas/user-equipament.schema';
+import {
+  EquipamentDocument,
+  EquipamentSchema,
+} from './schemas/equipament.schema';
+import {
+  UserEquipamentDocument,
+  UserEquipamentSchema,
+} from './schemas/user-equipament.schema';
 import { MongooseUserEquipamentRepository } from './repositories/user-equipament.repository.impl';
 import { UserEquipamentRepository } from './repositories/user-equipament.repository';
 import { CreateEquipamentUseCase } from './use-cases/create-equipament.use-case';

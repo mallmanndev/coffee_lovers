@@ -5,7 +5,7 @@ export type UserEquipamentProps = {
   description?: string;
   modifications?: { name: string; description: string }[];
   photos?: string[];
-  typeSpecificData?: Record<string, any>;
+  typeSpecificData?: Record<string, unknown>;
   createdAt?: Date;
   updatedAt?: Date;
 };
@@ -18,7 +18,7 @@ export class UserEquipament {
     private readonly description: string | null,
     private readonly modifications: { name: string; description: string }[],
     private readonly photos: string[],
-    private readonly typeSpecificData: Record<string, any>,
+    private readonly typeSpecificData: Record<string, unknown>,
     private readonly createdAt: Date,
     private readonly updatedAt: Date,
   ) {}
@@ -37,7 +37,14 @@ export class UserEquipament {
     );
   }
 
-  update(props: Partial<Omit<UserEquipamentProps, 'id' | 'equipamentId' | 'userId' | 'createdAt' | 'updatedAt'>>): UserEquipament {
+  update(
+    props: Partial<
+      Omit<
+        UserEquipamentProps,
+        'id' | 'equipamentId' | 'userId' | 'createdAt' | 'updatedAt'
+      >
+    >,
+  ): UserEquipament {
     return new UserEquipament(
       this.id,
       this.equipamentId,
@@ -51,13 +58,31 @@ export class UserEquipament {
     );
   }
 
-  getId(): string | null { return this.id; }
-  getEquipamentId(): string { return this.equipamentId; }
-  getUserId(): string { return this.userId; }
-  getDescription(): string | null { return this.description; }
-  getModifications(): { name: string; description: string }[] { return this.modifications; }
-  getPhotos(): string[] { return this.photos; }
-  getTypeSpecificData(): Record<string, any> { return this.typeSpecificData; }
-  getCreatedAt(): Date { return this.createdAt; }
-  getUpdatedAt(): Date { return this.updatedAt; }
+  getId(): string | null {
+    return this.id;
+  }
+  getEquipamentId(): string {
+    return this.equipamentId;
+  }
+  getUserId(): string {
+    return this.userId;
+  }
+  getDescription(): string | null {
+    return this.description;
+  }
+  getModifications(): { name: string; description: string }[] {
+    return this.modifications;
+  }
+  getPhotos(): string[] {
+    return this.photos;
+  }
+  getTypeSpecificData(): Record<string, any> {
+    return this.typeSpecificData;
+  }
+  getCreatedAt(): Date {
+    return this.createdAt;
+  }
+  getUpdatedAt(): Date {
+    return this.updatedAt;
+  }
 }

@@ -37,21 +37,21 @@ class SensoryProfileDocument {
   finish?: string;
 
   @Prop({ type: Number, default: null })
-  sca_score: number | null;
+  sca_score?: number | null;
 }
 
 @Schema({ timestamps: true, collection: 'coffees' })
 export class CoffeeDocument {
-  _id: MongooseSchema.Types.ObjectId;
+  _id!: MongooseSchema.Types.ObjectId;
 
   @Prop({ required: true })
-  coffee_name: string;
+  coffee_name!: string;
 
   @Prop()
   producer_farm?: string;
 
   @Prop({ required: true })
-  roastery: string;
+  roastery!: string;
 
   @Prop()
   origin_country?: string;
@@ -60,7 +60,7 @@ export class CoffeeDocument {
   region?: string;
 
   @Prop({ type: Number, default: null })
-  altitude_meters: number | null;
+  altitude_meters?: number | null;
 
   @Prop()
   variety?: string;
@@ -75,10 +75,11 @@ export class CoffeeDocument {
   sensory_profile?: SensoryProfileDocument;
 
   @Prop({ required: true, index: true })
-  userId: string;
+  userId!: string;
 
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt!: Date;
+  updatedAt!: Date;
 }
 
-export const CoffeeSchema: MongooseSchema = SchemaFactory.createForClass(CoffeeDocument);
+export const CoffeeSchema: MongooseSchema =
+  SchemaFactory.createForClass(CoffeeDocument);

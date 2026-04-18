@@ -13,7 +13,9 @@ import { LoginUserUseCase } from './use-cases/login-user.use-case';
 @Module({
   imports: [
     TsRestModule.register({}),
-    MongooseModule.forFeature([{ name: UserDocument.name, schema: UserSchema }]),
+    MongooseModule.forFeature([
+      { name: UserDocument.name, schema: UserSchema },
+    ]),
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService): JwtModuleOptions => ({

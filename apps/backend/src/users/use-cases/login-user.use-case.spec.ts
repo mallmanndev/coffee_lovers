@@ -15,10 +15,10 @@ describe('LoginUserUseCase', () => {
       findByEmail: jest.fn(),
       findById: jest.fn(),
       create: jest.fn(),
-    } as any;
+    } as unknown as jest.Mocked<UserRepository>;
     jwtService = {
       signAsync: jest.fn(),
-    } as any;
+    } as unknown as jest.Mocked<JwtService>;
     useCase = new LoginUserUseCase(userRepository, jwtService);
   });
 

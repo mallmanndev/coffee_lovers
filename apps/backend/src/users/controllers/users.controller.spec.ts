@@ -41,8 +41,17 @@ describe('UsersController', () => {
   });
 
   it('POST /accounts/register calls register use case and returns 201', async () => {
-    const dto = { name: 'John', email: 'john@example.com', password: '123456', confirmPassword: '123456' };
-    const user = User.create({ name: dto.name, email: dto.email, passwordHash: 'hash' });
+    const dto = {
+      name: 'John',
+      email: 'john@example.com',
+      password: '123456',
+      confirmPassword: '123456',
+    };
+    const user = User.create({
+      name: dto.name,
+      email: dto.email,
+      passwordHash: 'hash',
+    });
     registerUseCase.execute.mockResolvedValue(user);
 
     const res = await request(app.getHttpServer())
@@ -55,8 +64,15 @@ describe('UsersController', () => {
   });
 
   it('POST /accounts/register returns 409 if email already exists', async () => {
-    const dto = { name: 'John', email: 'john@example.com', password: '123456', confirmPassword: '123456' };
-    registerUseCase.execute.mockRejectedValue(new ConflictException('E-mail já está em uso'));
+    const dto = {
+      name: 'John',
+      email: 'john@example.com',
+      password: '123456',
+      confirmPassword: '123456',
+    };
+    registerUseCase.execute.mockRejectedValue(
+      new ConflictException('E-mail já está em uso'),
+    );
 
     const res = await request(app.getHttpServer())
       .post('/accounts/register')
@@ -70,7 +86,12 @@ describe('UsersController', () => {
   it('POST /accounts/login calls login use case and returns 200', async () => {
     const dto = { email: 'john@example.com', password: '123456' };
     const response = {
-      user: { id: '1', name: 'John', email: 'john@example.com', createdAt: new Date().toISOString() },
+      user: {
+        id: '1',
+        name: 'John',
+        email: 'john@example.com',
+        createdAt: new Date().toISOString(),
+      },
       accessToken: 'token',
     };
     loginUseCase.execute.mockResolvedValue(response);

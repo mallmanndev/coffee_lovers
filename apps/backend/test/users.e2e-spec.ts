@@ -10,18 +10,21 @@ describe('Users (e2e)', () => {
     // We assume a real Mongo instance is running or mocked via MongooseModule.forRootAsync
     // For this environment, we expect MONGODB_URI, JWT_SECRET to be present in env
     process.env.JWT_SECRET = 'test-secret';
-    process.env.MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/coffee_lovers_test';
+    process.env.MONGODB_URI =
+      process.env.MONGODB_URI || 'mongodb://localhost:27017/coffee_lovers_test';
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-    }));
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
+    );
     await app.init();
   });
 

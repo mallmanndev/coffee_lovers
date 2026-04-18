@@ -18,19 +18,28 @@ describe('UpdateUserEquipamentUseCase', () => {
 
   const mockUserEquipamentRepository = {
     findByUserIdAndEquipamentId: jest.fn(),
-    update: jest.fn().mockImplementation((ue: UserEquipament) => Promise.resolve(ue)),
+    update: jest
+      .fn()
+      .mockImplementation((ue: UserEquipament) => Promise.resolve(ue)),
   };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UpdateUserEquipamentUseCase,
-        { provide: UserEquipamentRepository, useValue: mockUserEquipamentRepository },
+        {
+          provide: UserEquipamentRepository,
+          useValue: mockUserEquipamentRepository,
+        },
       ],
     }).compile();
 
-    useCase = module.get<UpdateUserEquipamentUseCase>(UpdateUserEquipamentUseCase);
-    userEquipamentRepository = module.get<UserEquipamentRepository>(UserEquipamentRepository);
+    useCase = module.get<UpdateUserEquipamentUseCase>(
+      UpdateUserEquipamentUseCase,
+    );
+    userEquipamentRepository = module.get<UserEquipamentRepository>(
+      UserEquipamentRepository,
+    );
   });
 
   afterEach(() => {
@@ -45,11 +54,15 @@ describe('UpdateUserEquipamentUseCase', () => {
       typeSpecificData: { clicks: 25 },
     };
 
-    mockUserEquipamentRepository.findByUserIdAndEquipamentId.mockResolvedValue(mockUserEquipament);
+    mockUserEquipamentRepository.findByUserIdAndEquipamentId.mockResolvedValue(
+      mockUserEquipament,
+    );
 
     const result = await useCase.execute(equipamentId, userId, dto);
 
-    expect(userEquipamentRepository.findByUserIdAndEquipamentId).toHaveBeenCalledWith(userId, equipamentId);
+    expect(
+      userEquipamentRepository.findByUserIdAndEquipamentId,
+    ).toHaveBeenCalledWith(userId, equipamentId);
     expect(userEquipamentRepository.update).toHaveBeenCalled();
     expect(result.getDescription()).toBe('New description');
     expect(result.getTypeSpecificData()).toEqual({ clicks: 25 });
@@ -60,9 +73,13 @@ describe('UpdateUserEquipamentUseCase', () => {
     const equipamentId = 'unknown-eq';
     const dto = { description: 'New description' };
 
-    mockUserEquipamentRepository.findByUserIdAndEquipamentId.mockResolvedValue(null);
+    mockUserEquipamentRepository.findByUserIdAndEquipamentId.mockResolvedValue(
+      null,
+    );
 
-    await expect(useCase.execute(equipamentId, userId, dto)).rejects.toThrow(NotFoundException);
+    await expect(useCase.execute(equipamentId, userId, dto)).rejects.toThrow(
+      NotFoundException,
+    );
     expect(userEquipamentRepository.update).not.toHaveBeenCalled();
   });
 });

@@ -26,8 +26,12 @@ describe('EquipamentController (Integration)', () => {
     app.useGlobalPipes(new ValidationPipe());
     await app.init();
 
-    equipamentModel = moduleFixture.get<Model<EquipamentDocument>>(getModelToken(EquipamentDocument.name));
-    userEquipamentModel = moduleFixture.get<Model<UserEquipamentDocument>>(getModelToken(UserEquipamentDocument.name));
+    equipamentModel = moduleFixture.get<Model<EquipamentDocument>>(
+      getModelToken(EquipamentDocument.name),
+    );
+    userEquipamentModel = moduleFixture.get<Model<UserEquipamentDocument>>(
+      getModelToken(UserEquipamentDocument.name),
+    );
     jwtService = moduleFixture.get<JwtService>(JwtService);
 
     // Gerar um token real para o usuário de teste
@@ -59,23 +63,30 @@ describe('EquipamentController (Integration)', () => {
       typeSpecificData: { clicks: 25 },
     };
 
-    const res = await request(app.getHttpServer())
+    const res = await request(app.getHttpServer() as string)
       .post('/equipament')
       .set('Authorization', `Bearer ${authToken}`)
       .send(dto);
 
     expect(res.status).toBe(201);
-    expect(res.body.name).toBe(dto.name);
-    expect(res.body.userEquipamentId).toBeDefined();
-    expect(res.body.typeSpecificData.clicks).toBe(25);
+    const body = res.body as {
+      name: string;
+      userEquipamentId: string;
+      typeSpecificData: { clicks: number };
+    };
+    expect(body.name).toBe(dto.name);
+    expect(body.userEquipamentId).toBeDefined();
+    expect(body.typeSpecificData.clicks).toBe(25);
 
     // Verificar no banco
     const dbEquipament = await equipamentModel.findOne({ name: dto.name });
     expect(dbEquipament).toBeDefined();
-    
+
     const dbUserEq = await userEquipamentModel.findOne({ userId });
     expect(dbUserEq).toBeDefined();
-    expect(dbUserEq!.equipamentId.toString()).toBe(dbEquipament!._id.toString());
+    expect(dbUserEq!.equipamentId.toString()).toBe(
+      dbEquipament!._id.toString(),
+    );
   });
 
   it('POST /equipament deve associar um equipamento existente ao usuário via equipamentId', async () => {
@@ -98,31 +109,54 @@ describe('EquipamentController (Integration)', () => {
       typeSpecificData: { pressure: '9bar' },
     };
 
-    const res = await request(app.getHttpServer())
+    const res = await request(app.getHttpServer() as string)
       .post('/equipament')
       .set('Authorization', `Bearer ${authToken}`)
       .send(dto);
 
     expect(res.status).toBe(201);
-    expect(res.body.id).toBe(baseEquipament._id.toString());
-    expect(res.body.name).toBe('Gaggia Classic'); // Nome original do banco
-    expect(res.body.typeSpecificData.pressure).toBe('9bar'); // Dado novo do UserEquipament
-    expect(res.body.typeSpecificData.portafilterSize).toBe('58mm'); // Dado herdado da Base
+    const body = res.body as {
+      id: string;
+      name: string;
+      typeSpecificData: { pressure: string; portafilterSize: string };
+    };
+    expect(body.id).toBe(baseEquipament._id.toString());
+    expect(body.name).toBe('Gaggia Classic'); // Nome original do banco
+    expect(body.typeSpecificData.pressure).toBe('9bar'); // Dado novo do UserEquipament
+    expect(body.typeSpecificData.portafilterSize).toBe('58mm'); // Dado herdado da Base
   });
 
   it('GET /equipament deve listar equipamentos do catálogo', async () => {
     await equipamentModel.create([
-      { type: 'GRINDER', name: 'Eq 1', model: 'M1', brand: 'B1', createdById: userId },
-      { type: 'SCALE', name: 'Eq 2', model: 'M2', brand: 'B2', createdById: 'base' },
-      { type: 'KETTLE', name: 'Eq 3', model: 'M3', brand: 'B3', createdById: 'another-user-id' },
+      {
+        type: 'GRINDER',
+        name: 'Eq 1',
+        model: 'M1',
+        brand: 'B1',
+        createdById: userId,
+      },
+      {
+        type: 'SCALE',
+        name: 'Eq 2',
+        model: 'M2',
+        brand: 'B2',
+        createdById: 'base',
+      },
+      {
+        type: 'KETTLE',
+        name: 'Eq 3',
+        model: 'M3',
+        brand: 'B3',
+        createdById: 'another-user-id',
+      },
     ]);
 
-    const res = await request(app.getHttpServer())
+    const res = await request(app.getHttpServer() as string)
       .get('/equipament')
       .set('Authorization', `Bearer ${authToken}`);
 
     expect(res.status).toBe(200);
-    expect(res.body).toHaveLength(2);
+    expect(res.body as unknown[]).toHaveLength(2);
   });
 
   it('GET /equipament deve filtrar por texto em nome e descrição', async () => {
@@ -153,79 +187,130 @@ describe('EquipamentController (Integration)', () => {
       },
     ]);
 
-    const byName = await request(app.getHttpServer())
+    const byName = await request(app.getHttpServer() as string)
       .get('/equipament')
       .query({ text: 'comandante' })
       .set('Authorization', `Bearer ${authToken}`);
 
     expect(byName.status).toBe(200);
-    expect(byName.body).toHaveLength(1);
-    expect(byName.body[0].name).toBe('Comandante C40');
+    expect(byName.body as unknown[]).toHaveLength(1);
+    expect((byName.body as { name: string }[])[0].name).toBe('Comandante C40');
 
-    const byDescription = await request(app.getHttpServer())
+    const byDescription = await request(app.getHttpServer() as string)
       .get('/equipament')
       .query({ text: 'espresso' })
       .set('Authorization', `Bearer ${authToken}`);
 
     expect(byDescription.status).toBe(200);
-    expect(byDescription.body).toHaveLength(1);
-    expect(byDescription.body[0].name).toBe('Acaia Pearl');
+    expect(byDescription.body as unknown[]).toHaveLength(1);
+    expect((byDescription.body as { name: string }[])[0].name).toBe(
+      'Acaia Pearl',
+    );
   });
 
   it('GET /equipament?userOnly=true deve retornar somente equipamentos do usuário autenticado', async () => {
     await equipamentModel.create([
-      { type: 'GRINDER', name: 'User grinder', model: 'M1', brand: 'B1', createdById: userId },
-      { type: 'SCALE', name: 'Base scale', model: 'M2', brand: 'B2', createdById: 'base' },
-      { type: 'KETTLE', name: 'Other kettle', model: 'M3', brand: 'B3', createdById: 'another-user-id' },
+      {
+        type: 'GRINDER',
+        name: 'User grinder',
+        model: 'M1',
+        brand: 'B1',
+        createdById: userId,
+      },
+      {
+        type: 'SCALE',
+        name: 'Base scale',
+        model: 'M2',
+        brand: 'B2',
+        createdById: 'base',
+      },
+      {
+        type: 'KETTLE',
+        name: 'Other kettle',
+        model: 'M3',
+        brand: 'B3',
+        createdById: 'another-user-id',
+      },
     ]);
 
-    const res = await request(app.getHttpServer())
+    const res = await request(app.getHttpServer() as string)
       .get('/equipament')
       .query({ userOnly: true })
       .set('Authorization', `Bearer ${authToken}`);
 
     expect(res.status).toBe(200);
-    expect(res.body).toHaveLength(1);
-    expect(res.body[0].name).toBe('User grinder');
+    expect(res.body as unknown[]).toHaveLength(1);
+    expect((res.body as { name: string }[])[0].name).toBe('User grinder');
   });
 
   it('GET /equipament com userOnly=false deve retornar somente base + usuário atual', async () => {
     await equipamentModel.create([
-      { type: 'GRINDER', name: 'User grinder', model: 'M1', brand: 'B1', createdById: userId },
-      { type: 'SCALE', name: 'Base scale', model: 'M2', brand: 'B2', createdById: 'base' },
-      { type: 'KETTLE', name: 'Other kettle', model: 'M3', brand: 'B3', createdById: 'another-user-id' },
+      {
+        type: 'GRINDER',
+        name: 'User grinder',
+        model: 'M1',
+        brand: 'B1',
+        createdById: userId,
+      },
+      {
+        type: 'SCALE',
+        name: 'Base scale',
+        model: 'M2',
+        brand: 'B2',
+        createdById: 'base',
+      },
+      {
+        type: 'KETTLE',
+        name: 'Other kettle',
+        model: 'M3',
+        brand: 'B3',
+        createdById: 'another-user-id',
+      },
     ]);
 
-    const res = await request(app.getHttpServer())
+    const res = await request(app.getHttpServer() as string)
       .get('/equipament')
       .query({ userOnly: false })
       .set('Authorization', `Bearer ${authToken}`);
 
     expect(res.status).toBe(200);
-    expect(res.body).toHaveLength(2);
-    const returnedNames = res.body.map((item: { name: string }) => item.name);
-    expect(returnedNames).toEqual(expect.arrayContaining(['User grinder', 'Base scale']));
+    expect(res.body as unknown[]).toHaveLength(2);
+    const returnedNames = (res.body as { name: string }[]).map(
+      (item) => item.name,
+    );
+    expect(returnedNames).toEqual(
+      expect.arrayContaining(['User grinder', 'Base scale']),
+    );
     expect(returnedNames).not.toContain('Other kettle');
   });
 
   it('GET /equipament/:id deve retornar detalhes e posse do usuário', async () => {
     const eq = await equipamentModel.create({
-      type: 'GRINDER', name: 'Details', model: 'M', brand: 'B', createdById: userId
+      type: 'GRINDER',
+      name: 'Details',
+      model: 'M',
+      brand: 'B',
+      createdById: userId,
     });
 
-    const res = await request(app.getHttpServer())
-      .get(`/equipament/${eq._id}`)
+    const res = await request(app.getHttpServer() as string)
+      .get(`/equipament/${eq._id.toString()}`)
       .set('Authorization', `Bearer ${authToken}`);
 
     expect(res.status).toBe(200);
-    expect(res.body.id).toBe(eq._id.toString());
+    const body = res.body as { id: string };
+    expect(body.id).toBe(eq._id.toString());
   });
 
   it('PUT /equipament/:id deve atualizar dados personalizados', async () => {
     const eq = await equipamentModel.create({
-      type: 'GRINDER', name: 'To Update', model: 'M', brand: 'B', createdById: userId
+      type: 'GRINDER',
+      name: 'To Update',
+      model: 'M',
+      brand: 'B',
+      createdById: userId,
     });
-    
+
     await userEquipamentModel.create({
       userId,
       equipamentId: eq._id.toString(),
@@ -234,33 +319,48 @@ describe('EquipamentController (Integration)', () => {
 
     const updateDto = { description: 'New description' };
 
-    const res = await request(app.getHttpServer())
-      .put(`/equipament/${eq._id}`)
+    const res = await request(app.getHttpServer() as string)
+      .put(`/equipament/${eq._id.toString()}`)
       .set('Authorization', `Bearer ${authToken}`)
       .send(updateDto);
 
     expect(res.status).toBe(200);
-    expect(res.body.description).toBe('New description');
+    expect((res.body as { description: string }).description).toBe(
+      'New description',
+    );
 
-    const updated = await userEquipamentModel.findOne({ userId, equipamentId: eq._id.toString() });
+    const updated = await userEquipamentModel.findOne({
+      userId,
+      equipamentId: eq._id.toString(),
+    });
     expect(updated!.description).toBe('New description');
   });
 
   it('DELETE /equipament/:id deve remover da coleção do usuário', async () => {
     const eq = await equipamentModel.create({
-      type: 'GRINDER', name: 'To Delete', model: 'M', brand: 'B', createdById: userId
+      type: 'GRINDER',
+      name: 'To Delete',
+      model: 'M',
+      brand: 'B',
+      createdById: userId,
     });
-    
-    await userEquipamentModel.create({ userId, equipamentId: eq._id.toString() });
 
-    const res = await request(app.getHttpServer())
-      .delete(`/equipament/${eq._id}`)
+    await userEquipamentModel.create({
+      userId,
+      equipamentId: eq._id.toString(),
+    });
+
+    const res = await request(app.getHttpServer() as string)
+      .delete(`/equipament/${eq._id.toString()}`)
       .set('Authorization', `Bearer ${authToken}`)
       .send({});
 
     expect(res.status).toBe(204);
 
-    const exists = await userEquipamentModel.findOne({ userId, equipamentId: eq._id.toString() });
+    const exists = await userEquipamentModel.findOne({
+      userId,
+      equipamentId: eq._id.toString(),
+    });
     expect(exists).toBeNull();
   });
 });

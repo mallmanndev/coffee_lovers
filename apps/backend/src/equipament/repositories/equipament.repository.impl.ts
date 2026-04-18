@@ -57,8 +57,11 @@ export class MongooseEquipamentRepository implements EquipamentRepository {
       query.createdById = { $in: [filters.userId, 'base'] };
     }
 
-    const docs = await this.equipamentModel.find(query).sort({ createdAt: -1 }).exec();
-    return docs.map(doc => this.mapToEntity(doc));
+    const docs = await this.equipamentModel
+      .find(query)
+      .sort({ createdAt: -1 })
+      .exec();
+    return docs.map((doc) => this.mapToEntity(doc));
   }
 
   private mapToEntity(doc: EquipamentDocument): Equipament {

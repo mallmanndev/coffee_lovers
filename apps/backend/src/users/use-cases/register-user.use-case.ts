@@ -1,4 +1,8 @@
-import { ConflictException, BadRequestException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  BadRequestException,
+  Injectable,
+} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { User } from '../domain/user.entity';
 import { RegisterUserDto } from '../dto/register-user.dto';

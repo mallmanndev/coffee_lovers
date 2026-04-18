@@ -13,7 +13,7 @@ describe('RegisterUserUseCase', () => {
       create: jest.fn(),
       findByEmail: jest.fn(),
       findById: jest.fn(),
-    } as any;
+    } as unknown as jest.Mocked<UserRepository>;
     useCase = new RegisterUserUseCase(userRepository);
   });
 
@@ -32,7 +32,9 @@ describe('RegisterUserUseCase', () => {
 
     expect(result.getName()).toBe(dto.name);
     expect(result.getEmail()).toBe(dto.email);
-    expect(await bcrypt.compare(dto.password, result.getPasswordHash())).toBe(true);
+    expect(await bcrypt.compare(dto.password, result.getPasswordHash())).toBe(
+      true,
+    );
     expect(userRepository.create).toHaveBeenCalled();
   });
 
@@ -55,11 +57,13 @@ describe('RegisterUserUseCase', () => {
       confirmPassword: 'password123',
     };
 
-    userRepository.findByEmail.mockResolvedValue(User.create({
-      name: 'Existing',
-      email: dto.email,
-      passwordHash: 'hash',
-    }));
+    userRepository.findByEmail.mockResolvedValue(
+      User.create({
+        name: 'Existing',
+        email: dto.email,
+        passwordHash: 'hash',
+      }),
+    );
 
     await expect(useCase.execute(dto)).rejects.toThrow(ConflictException);
   });

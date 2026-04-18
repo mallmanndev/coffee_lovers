@@ -23,12 +23,19 @@ describe('DeleteUserEquipamentUseCase', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         DeleteUserEquipamentUseCase,
-        { provide: UserEquipamentRepository, useValue: mockUserEquipamentRepository },
+        {
+          provide: UserEquipamentRepository,
+          useValue: mockUserEquipamentRepository,
+        },
       ],
     }).compile();
 
-    useCase = module.get<DeleteUserEquipamentUseCase>(DeleteUserEquipamentUseCase);
-    userEquipamentRepository = module.get<UserEquipamentRepository>(UserEquipamentRepository);
+    useCase = module.get<DeleteUserEquipamentUseCase>(
+      DeleteUserEquipamentUseCase,
+    );
+    userEquipamentRepository = module.get<UserEquipamentRepository>(
+      UserEquipamentRepository,
+    );
   });
 
   afterEach(() => {
@@ -39,21 +46,32 @@ describe('DeleteUserEquipamentUseCase', () => {
     const userId = 'user-123';
     const equipamentId = 'base-eq-123';
 
-    mockUserEquipamentRepository.findByUserIdAndEquipamentId.mockResolvedValue(mockUserEquipament);
+    mockUserEquipamentRepository.findByUserIdAndEquipamentId.mockResolvedValue(
+      mockUserEquipament,
+    );
 
     await useCase.execute(equipamentId, userId);
 
-    expect(userEquipamentRepository.findByUserIdAndEquipamentId).toHaveBeenCalledWith(userId, equipamentId);
-    expect(userEquipamentRepository.delete).toHaveBeenCalledWith(userId, equipamentId);
+    expect(
+      userEquipamentRepository.findByUserIdAndEquipamentId,
+    ).toHaveBeenCalledWith(userId, equipamentId);
+    expect(userEquipamentRepository.delete).toHaveBeenCalledWith(
+      userId,
+      equipamentId,
+    );
   });
 
   it('should throw NotFoundException if user equipament does not exist to delete', async () => {
     const userId = 'user-123';
     const equipamentId = 'unknown-eq';
 
-    mockUserEquipamentRepository.findByUserIdAndEquipamentId.mockResolvedValue(null);
+    mockUserEquipamentRepository.findByUserIdAndEquipamentId.mockResolvedValue(
+      null,
+    );
 
-    await expect(useCase.execute(equipamentId, userId)).rejects.toThrow(NotFoundException);
+    await expect(useCase.execute(equipamentId, userId)).rejects.toThrow(
+      NotFoundException,
+    );
     expect(userEquipamentRepository.delete).not.toHaveBeenCalled();
   });
 });
