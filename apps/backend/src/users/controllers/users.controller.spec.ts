@@ -46,11 +46,15 @@ describe('UsersController', () => {
       email: 'john@example.com',
       password: '123456',
       confirmPassword: '123456',
+      city: 'Florianópolis',
+      state: 'SC',
     };
     const user = User.create({
       name: dto.name,
       email: dto.email,
       passwordHash: 'hash',
+      city: dto.city,
+      state: dto.state,
     });
     registerUseCase.execute.mockResolvedValue(user);
 
@@ -69,6 +73,8 @@ describe('UsersController', () => {
       email: 'john@example.com',
       password: '123456',
       confirmPassword: '123456',
+      city: 'Florianópolis',
+      state: 'SC',
     };
     registerUseCase.execute.mockRejectedValue(
       new ConflictException('E-mail já está em uso'),
@@ -90,6 +96,8 @@ describe('UsersController', () => {
         id: '1',
         name: 'John',
         email: 'john@example.com',
+        city: 'Florianópolis',
+        state: 'SC',
         createdAt: new Date().toISOString(),
       },
       accessToken: 'token',

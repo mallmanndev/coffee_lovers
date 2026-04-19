@@ -1,4 +1,5 @@
 import { initContract } from '@ts-rest/core';
+import { z } from 'zod';
 import { authContract } from './contracts/auth.contract';
 import { equipamentContract } from './contracts/equipament.contract';
 import { coffeeContract } from './contracts/coffee.contract';
@@ -15,7 +16,7 @@ export const apiContract = c.router(
   },
   {
     commonResponses: {
-      401: c.type<{ message: string }>(),
+      401: z.object({ message: z.string() }),
     },
     metadata: {
       security: [{ bearerAuth: [] }],

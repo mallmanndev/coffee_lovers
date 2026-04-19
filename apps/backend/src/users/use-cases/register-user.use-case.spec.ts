@@ -23,6 +23,8 @@ describe('RegisterUserUseCase', () => {
       email: 'john@example.com',
       password: 'password123',
       confirmPassword: 'password123',
+      city: 'Florianópolis',
+      state: 'SC',
     };
 
     userRepository.findByEmail.mockResolvedValue(null);
@@ -32,6 +34,8 @@ describe('RegisterUserUseCase', () => {
 
     expect(result.getName()).toBe(dto.name);
     expect(result.getEmail()).toBe(dto.email);
+    expect(result.getCity()).toBe(dto.city);
+    expect(result.getState()).toBe(dto.state);
     expect(await bcrypt.compare(dto.password, result.getPasswordHash())).toBe(
       true,
     );
@@ -44,6 +48,8 @@ describe('RegisterUserUseCase', () => {
       email: 'john@example.com',
       password: 'password123',
       confirmPassword: 'differentpassword',
+      city: 'Florianópolis',
+      state: 'SC',
     };
 
     await expect(useCase.execute(dto)).rejects.toThrow(BadRequestException);
@@ -55,6 +61,8 @@ describe('RegisterUserUseCase', () => {
       email: 'john@example.com',
       password: 'password123',
       confirmPassword: 'password123',
+      city: 'Florianópolis',
+      state: 'SC',
     };
 
     userRepository.findByEmail.mockResolvedValue(
@@ -62,6 +70,8 @@ describe('RegisterUserUseCase', () => {
         name: 'Existing',
         email: dto.email,
         passwordHash: 'hash',
+        city: 'Florianópolis',
+        state: 'SC',
       }),
     );
 

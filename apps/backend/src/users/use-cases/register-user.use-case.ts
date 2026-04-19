@@ -29,6 +29,8 @@ export class RegisterUserUseCase {
       name: dto.name,
       email: dto.email,
       passwordHash,
+      city: dto.city,
+      state: dto.state,
     });
 
     return this.userRepository.create(user);

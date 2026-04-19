@@ -17,6 +17,8 @@ export class MongooseUserRepository implements UserRepository {
       name: user.getName(),
       email: user.getEmail(),
       passwordHash: user.getPasswordHash(),
+      city: user.getCity(),
+      state: user.getState(),
     });
 
     const doc = await createdUser.save();
@@ -39,6 +41,8 @@ export class MongooseUserRepository implements UserRepository {
       name: doc.name,
       email: doc.email,
       passwordHash: doc.passwordHash,
+      city: doc.city,
+      state: doc.state,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     });

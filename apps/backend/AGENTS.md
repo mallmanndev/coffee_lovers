@@ -109,7 +109,9 @@ src/
 ├── <feature>/
 │   ├── <feature>.module.ts
 │   ├── domain/
-│   │   └── <feature>.entity.ts        ← entidade de domínio (atributos privados)
+│   │   └── <feature>.entity.ts        ← entidade de domínio 
+│   │   └── <feature>.entity.spec.ts   ← testes da entidade de domínio 
+(atributos privados)
 │   ├── use-cases/
 │   │   ├── <action>-<feature>.use-case.ts
 │   │   └── <action>-<feature>.use-case.spec.ts

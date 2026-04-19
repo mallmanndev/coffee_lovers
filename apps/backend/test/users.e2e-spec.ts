@@ -37,6 +37,8 @@ describe('Users (e2e)', () => {
     email: `e2e-${Date.now()}@example.com`,
     password: 'password123',
     confirmPassword: 'password123',
+    city: 'Florianópolis',
+    state: 'SC',
   };
 
   it('/accounts/register (POST)', () => {
@@ -46,6 +48,8 @@ describe('Users (e2e)', () => {
       .expect(201)
       .expect((res) => {
         expect(res.body.email).toBe(registerDto.email);
+        expect(res.body.city).toBe(registerDto.city);
+        expect(res.body.state).toBe(registerDto.state);
         expect(res.body.id).toBeDefined();
         expect(res.body.password).toBeUndefined();
       });

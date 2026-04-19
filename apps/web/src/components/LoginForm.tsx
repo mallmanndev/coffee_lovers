@@ -46,7 +46,7 @@ export function LoginForm() {
     setSuccess(null);
 
     try {
-      const response = await apiClient.login({
+      const response = await apiClient.auth.login({
         body: data,
       });
 

@@ -5,6 +5,8 @@ export const registerBodySchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
   confirmPassword: z.string().min(1),
+  city: z.string().min(1),
+  state: z.string().min(1),
 });
 
 export const loginBodySchema = z.object({
@@ -16,7 +18,10 @@ export const userResponseSchema = z.object({
   id: z.string(),
   name: z.string(),
   email: z.string(),
+  city: z.string(),
+  state: z.string(),
   createdAt: z.string(),
+  updatedAt: z.string(),
 });
 
 export const authResponseSchema = z.object({

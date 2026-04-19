@@ -37,4 +37,17 @@ export const authContract = c.router({
       security: [],
     },
   },
+  getProfile: {
+    method: 'GET',
+    path: '/profile/:id',
+    pathParams: z.object({
+      id: z.string(),
+    }),
+    responses: {
+      200: userResponseSchema,
+      401: z.object({ message: z.string() }),
+      404: z.object({ message: z.string() }),
+    },
+    summary: 'Get user profile',
+  },
 });

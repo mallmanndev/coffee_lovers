@@ -12,6 +12,12 @@ export class UserDocument extends Document {
   @Prop({ required: true })
   passwordHash: string;
 
+  @Prop({ required: true })
+  city: string;
+
+  @Prop({ required: true })
+  state: string;
+
   createdAt: Date;
   updatedAt: Date;
 }

@@ -4,6 +4,8 @@ export class User {
     private readonly name: string,
     private readonly email: string,
     private readonly passwordHash: string,
+    private readonly city: string,
+    private readonly state: string,
     private readonly createdAt: Date,
     private readonly updatedAt: Date,
   ) {}
@@ -13,6 +15,8 @@ export class User {
     name: string;
     email: string;
     passwordHash: string;
+    city: string;
+    state: string;
     createdAt?: Date;
     updatedAt?: Date;
   }): User {
@@ -21,6 +25,8 @@ export class User {
       props.name,
       props.email.toLowerCase().trim(),
       props.passwordHash,
+      props.city,
+      props.state,
       props.createdAt || new Date(),
       props.updatedAt || new Date(),
     );
@@ -40,6 +46,14 @@ export class User {
 
   getPasswordHash(): string {
     return this.passwordHash;
+  }
+
+  getCity(): string {
+    return this.city;
+  }
+
+  getState(): string {
+    return this.state;
   }
 
   getCreatedAt(): Date {

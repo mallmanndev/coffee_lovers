@@ -30,6 +30,8 @@ export function RegisterForm() {
       email: "",
       password: "",
       confirmPassword: "",
+      city: "",
+      state: "",
     },
   });
 
@@ -38,7 +40,7 @@ export function RegisterForm() {
     setError(null);
 
     try {
-      const response = await apiClient.register({
+      const response = await apiClient.auth.register({
         body: data,
       });
       console.log("Resposta da API:", response);
@@ -87,6 +89,35 @@ export function RegisterForm() {
         {errors.email && (
           <p className="text-sm text-destructive">{errors.email.message}</p>
         )}
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-3">
+          <Label htmlFor="city">Cidade</Label>
+          <Input
+            id="city"
+            placeholder="Sua cidade"
+            {...register("city")}
+            disabled={isLoading}
+          />
+          {errors.city && (
+            <p className="text-sm text-destructive">{errors.city.message}</p>
+          )}
+        </div>
+
+        <div className="space-y-3">
+          <Label htmlFor="state">Estado (UF)</Label>
+          <Input
+            id="state"
+            placeholder="Ex: SP"
+            maxLength={2}
+            {...register("state")}
+            disabled={isLoading}
+          />
+          {errors.state && (
+            <p className="text-sm text-destructive">{errors.state.message}</p>
+          )}
+        </div>
       </div>
 
       <div className="space-y-3">

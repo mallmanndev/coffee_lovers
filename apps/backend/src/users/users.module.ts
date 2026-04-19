@@ -9,6 +9,7 @@ import { UserRepository } from './repositories/user.repository';
 import { UserDocument, UserSchema } from './schemas/user.schema';
 import { RegisterUserUseCase } from './use-cases/register-user.use-case';
 import { LoginUserUseCase } from './use-cases/login-user.use-case';
+import { GetUserProfileUseCase } from './use-cases/get-user-profile.use-case';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { LoginUserUseCase } from './use-cases/login-user.use-case';
   providers: [
     RegisterUserUseCase,
     LoginUserUseCase,
+    GetUserProfileUseCase,
     {
       provide: UserRepository,
       useClass: MongooseUserRepository,

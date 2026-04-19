@@ -30,6 +30,8 @@ describe('LoginUserUseCase', () => {
       name: 'John Doe',
       email: 'john@example.com',
       passwordHash,
+      city: 'Florianópolis',
+      state: 'SC',
     });
 
     const dto = { email: 'john@example.com', password };
@@ -57,6 +59,8 @@ describe('LoginUserUseCase', () => {
       name: 'John',
       email: 'john@example.com',
       passwordHash,
+      city: 'Florianópolis',
+      state: 'SC',
     });
 
     const dto = { email: 'john@example.com', password: 'wrong-password' };
