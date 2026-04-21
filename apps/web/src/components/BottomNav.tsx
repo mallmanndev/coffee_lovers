@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { User, Package, Wrench } from "lucide-react";
 
 const navItems = [
-  { href: "/profile", label: "Perfil", icon: User },
+  { href: "/profile/me", label: "Perfil", icon: User },
   { href: "/stock", label: "Estoque", icon: Package },
   { href: "/equipment", label: "Equipamentos", icon: Wrench },
 ];
@@ -19,7 +19,10 @@ export function BottomNav() {
       className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 rounded-full border border-border bg-background/80 px-4 py-2 shadow-lg backdrop-blur-md"
     >
       {navItems.map(({ href, label, icon: Icon }) => {
-        const isActive = pathname === href;
+        const isActive =
+          href === "/profile/me"
+            ? pathname === "/profile/me" || pathname.startsWith("/profile/")
+            : pathname === href;
         return (
           <Link
             key={href}

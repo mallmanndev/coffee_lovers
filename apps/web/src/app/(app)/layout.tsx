@@ -1,4 +1,5 @@
 import { BottomNav } from "@/components/BottomNav";
+import { RequireAuth } from "@/components/RequireAuth";
 
 export default function AppLayout({
   children,
@@ -6,9 +7,9 @@ export default function AppLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <RequireAuth>
       {children}
       <BottomNav />
-    </>
+    </RequireAuth>
   );
 }

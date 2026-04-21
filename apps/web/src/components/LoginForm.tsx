@@ -9,11 +9,23 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useState, useEffect } from "react";
 import { apiClient } from "@/lib/api-client";
+import { setSession } from "@/lib/auth-session";
 import { useRouter, useSearchParams } from "next/navigation";
-import { AlertCircleIcon } from "lucide-react";
+function getSafeRedirectPath(nextParam: string | null): string {
+  if (!nextParam) return "/feed";
+  try {
+    const decoded = decodeURIComponent(nextParam);
+    if (decoded.startsWith("/") && !decoded.startsWith("//")) {
+      return decoded;
+    }
+  } catch {
+    /* ignore malformed next */
+  }
+  return "/feed";
+}
 
 export function LoginForm() {
   const [error, setError] = useState<string | null>(null);
@@ -51,8 +63,9 @@ export function LoginForm() {
       });
 
       if (response.status === 200) {
-        // Por enquanto apenas redirecionamos, o estado de auth será tratado futuramente
-        router.push("/feed");
+        setSession(response.body);
+        const next = getSafeRedirectPath(searchParams.get("next"));
+        router.push(next);
       } else if (response.status === 401) {
         setError("E-mail ou senha inválidos.");
       } else {
