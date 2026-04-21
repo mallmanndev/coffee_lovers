@@ -27,7 +27,7 @@ export class EquipamentController {
 
   @TsRestHandler(equipamentContract.create)
   @UseGuards(JwtAuthGuard)
-  create(@CurrentUser() user: { sub: string }) {
+  async create(@CurrentUser() user: { sub: string }): Promise<unknown> {
     return tsRestHandler(equipamentContract.create, async ({ body }) => {
       const result = await this.createEquipamentUseCase.execute(body, user.sub);
       return {
@@ -39,7 +39,7 @@ export class EquipamentController {
 
   @TsRestHandler(equipamentContract.list)
   @UseGuards(JwtAuthGuard)
-  list(@CurrentUser() user: { sub: string }) {
+  async list(@CurrentUser() user: { sub: string }): Promise<unknown> {
     return tsRestHandler(equipamentContract.list, async ({ query }) => {
       const equipaments = await this.equipamentRepository.findAll({
         type: query.type,
@@ -55,7 +55,7 @@ export class EquipamentController {
   }
 
   @TsRestHandler(equipamentContract.get)
-  get(@CurrentUser() user?: { sub: string }) {
+  async get(@CurrentUser() user?: { sub: string }): Promise<unknown> {
     return tsRestHandler(equipamentContract.get, async ({ params }) => {
       const equipament = await this.equipamentRepository.findById(params.id);
       if (!equipament)
@@ -77,7 +77,7 @@ export class EquipamentController {
 
   @TsRestHandler(equipamentContract.update)
   @UseGuards(JwtAuthGuard)
-  update(@CurrentUser() user: { sub: string }) {
+  async update(@CurrentUser() user: { sub: string }): Promise<unknown> {
     return tsRestHandler(
       equipamentContract.update,
       async ({ params, body }) => {
@@ -96,7 +96,7 @@ export class EquipamentController {
 
   @TsRestHandler(equipamentContract.delete)
   @UseGuards(JwtAuthGuard)
-  delete(@CurrentUser() user: { sub: string }) {
+  async delete(@CurrentUser() user: { sub: string }): Promise<unknown> {
     return tsRestHandler(equipamentContract.delete, async ({ params }) => {
       await this.deleteUserEquipamentUseCase.execute(params.id, user.sub);
       return {

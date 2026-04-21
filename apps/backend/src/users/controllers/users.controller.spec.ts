@@ -99,6 +99,7 @@ describe('UsersController', () => {
         city: 'Florianópolis',
         state: 'SC',
         createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       },
       accessToken: 'token',
     };
