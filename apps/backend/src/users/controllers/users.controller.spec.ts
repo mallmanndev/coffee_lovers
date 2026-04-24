@@ -2,9 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { TsRestModule } from '@ts-rest/nest';
+import { JwtService } from '@nestjs/jwt';
 import { UsersController } from './users.controller';
 import { RegisterUserUseCase } from '../use-cases/register-user.use-case';
 import { LoginUserUseCase } from '../use-cases/login-user.use-case';
+import { GetUserProfileUseCase } from '../use-cases/get-user-profile.use-case';
 import { User } from '../domain/user.entity';
 import { ConflictException } from '@nestjs/common';
 
@@ -19,11 +21,19 @@ describe('UsersController', () => {
       controllers: [UsersController],
       providers: [
         {
+          provide: JwtService,
+          useValue: { verifyAsync: jest.fn() },
+        },
+        {
           provide: RegisterUserUseCase,
           useValue: { execute: jest.fn() },
         },
         {
           provide: LoginUserUseCase,
+          useValue: { execute: jest.fn() },
+        },
+        {
+          provide: GetUserProfileUseCase,
           useValue: { execute: jest.fn() },
         },
       ],
@@ -37,7 +47,9 @@ describe('UsersController', () => {
   });
 
   afterEach(async () => {
-    await app.close();
+    if (app) {
+      await app.close();
+    }
   });
 
   it('POST /accounts/register calls register use case and returns 201', async () => {

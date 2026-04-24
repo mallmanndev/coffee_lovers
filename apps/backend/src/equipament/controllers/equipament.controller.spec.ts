@@ -64,8 +64,8 @@ describe('EquipamentController', () => {
       const expectedResult = { id: '1', ...dto };
       createUseCase.execute.mockResolvedValue(expectedResult as any);
 
-      // ts-rest handler call simulation
-      const handler = controller.create(mockUser) as any;
+      // ts-rest handler call simulation (controller methods are async)
+      const handler = (await controller.create(mockUser)) as any;
       const result = await handler({ body: dto });
 
       expect(createUseCase.execute).toHaveBeenCalledWith(dto, mockUser.sub);
@@ -90,7 +90,7 @@ describe('EquipamentController', () => {
       });
       equipamentRepo.findAll.mockResolvedValue([mockEquipament]);
 
-      const handler = controller.list(mockUser) as any;
+      const handler = (await controller.list(mockUser)) as any;
       const result = await handler({ query: {} });
 
       expect(equipamentRepo.findAll).toHaveBeenCalled();
@@ -104,7 +104,7 @@ describe('EquipamentController', () => {
     it('should return 404 if equipment not found', async () => {
       equipamentRepo.findById.mockResolvedValue(null);
 
-      const handler = controller.get(mockUser) as any;
+      const handler = (await controller.get(mockUser)) as any;
       const result = await handler({ params: { id: '1' } });
 
       expect(result).toEqual({
@@ -127,7 +127,7 @@ describe('EquipamentController', () => {
       equipamentRepo.findById.mockResolvedValue(mockEquipament);
       userEquipamentRepo.findByUserIdAndEquipamentId.mockResolvedValue(null);
 
-      const handler = controller.get(mockUser) as any;
+      const handler = (await controller.get(mockUser)) as any;
       const result = await handler({ params: { id: '1' } });
 
       expect(result.status).toBe(200);
@@ -149,7 +149,7 @@ describe('EquipamentController', () => {
       });
       updateUseCase.execute.mockResolvedValue(mockUserEq);
 
-      const handler = controller.update(mockUser) as any;
+      const handler = (await controller.update(mockUser)) as any;
       const result = await handler({ params: { id: 'e-1' }, body: dto });
 
       expect(updateUseCase.execute).toHaveBeenCalledWith('e-1', mockUser.sub, dto);
@@ -162,7 +162,7 @@ describe('EquipamentController', () => {
     it('should call DeleteUserEquipamentUseCase and return 204', async () => {
       deleteUseCase.execute.mockResolvedValue(undefined);
 
-      const handler = controller.delete(mockUser) as any;
+      const handler = (await controller.delete(mockUser)) as any;
       const result = await handler({ params: { id: 'e-1' } });
 
       expect(deleteUseCase.execute).toHaveBeenCalledWith('e-1', mockUser.sub);
