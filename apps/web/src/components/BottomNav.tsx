@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Rss, User, Package, Wrench } from "lucide-react";
+import { Rss, User, Wrench } from "lucide-react";
+
+import { CoffeeBeansIcon } from "@/components/icons/CoffeeBeansIcon";
 
 const navItems = [
   { href: "/feed", label: "Feed", icon: Rss },
   { href: "/profile/me", label: "Perfil", icon: User },
-  { href: "/stock", label: "Estoque", icon: Package },
+  { href: "/stock", label: "Cafés", icon: CoffeeBeansIcon },
   { href: "/equipment", label: "Equipamentos", icon: Wrench },
 ];
 

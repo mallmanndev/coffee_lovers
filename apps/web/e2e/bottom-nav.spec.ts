@@ -22,7 +22,7 @@ test.describe('BottomNav', () => {
     await seedAuthedSession(page);
     await page.goto('/feed');
 
-    const stockLink = page.getByRole('link', { name: 'Estoque' });
+    const stockLink = page.getByRole('link', { name: 'Cafés' });
     await expect(stockLink).toBeVisible();
     await expect(stockLink).toHaveAttribute('href', '/stock');
   });
@@ -42,7 +42,7 @@ test.describe('BottomNav', () => {
 
     // No item should be active on /feed (neither /profile nor /stock)
     const profileLink = page.getByRole('link', { name: 'Perfil' });
-    const stockLink = page.getByRole('link', { name: 'Estoque' });
+    const stockLink = page.getByRole('link', { name: 'Cafés' });
 
     await expect(profileLink).not.toHaveClass(/bg-primary/);
     await expect(stockLink).not.toHaveClass(/bg-primary/);
