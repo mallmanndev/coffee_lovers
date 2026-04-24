@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { EquipamentModule } from './equipament/equipament.module';
 import { CoffeesModule } from './coffees/coffees.module';
 import { StockModule } from './stock/stock.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { StockModule } from './stock/stock.module';
     EquipamentModule,
     CoffeesModule,
     StockModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [AppService],
