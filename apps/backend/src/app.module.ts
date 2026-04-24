@@ -12,6 +12,7 @@ import { EquipamentModule } from './equipament/equipament.module';
 import { CoffeesModule } from './coffees/coffees.module';
 import { StockModule } from './stock/stock.module';
 import { UploadModule } from './upload/upload.module';
+import { FeedModule } from './feed/feed.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { UploadModule } from './upload/upload.module';
     CoffeesModule,
     StockModule,
     UploadModule,
+    FeedModule,
   ],
   controllers: [AppController],
   providers: [AppService],
