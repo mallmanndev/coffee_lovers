@@ -5,6 +5,7 @@ import { UsersModule } from '../users/users.module';
 import { FeedController } from './controllers/feed.controller';
 import { CreatePostUseCase } from './use-cases/create-post.use-case';
 import { DeletePostUseCase } from './use-cases/delete-post.use-case';
+import { UpdatePostUseCase } from './use-cases/update-post.use-case';
 import { LikePostUseCase } from './use-cases/like-post.use-case';
 import { UnlikePostUseCase } from './use-cases/unlike-post.use-case';
 import { AddCommentToPostUseCase } from './use-cases/add-comment-to-post.use-case';
@@ -35,6 +36,7 @@ import { FeedDaoImpl } from './daos/feed.dao.impl';
   providers: [
     CreatePostUseCase,
     DeletePostUseCase,
+    UpdatePostUseCase,
     LikePostUseCase,
     UnlikePostUseCase,
     AddCommentToPostUseCase,

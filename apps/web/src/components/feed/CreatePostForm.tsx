@@ -7,6 +7,7 @@ import { z } from "zod";
 import {
   type CreatePostInput,
   type CreatePostOutput,
+  type UpdatePostInput,
 } from "@coffee-lovers/shared";
 import { apiClient } from "@/lib/api-client";
 import { Button } from "@/components/ui/button";
@@ -47,6 +48,8 @@ export type CreatePostFormProps = {
   /** Só o modo `equipment_share`: resumo curto (ex.: de `formatEquipmentShareSummary`). */
   initialShareSummary?: string;
   equipmentShare?: { userEquipamentId: string; shareSummary?: string };
+  /** Com id: envia `PATCH` em vez de criar. */
+  editPostId?: string;
   onSuccess?: (post: CreatePostOutput) => void;
   onError?: (message: string) => void;
   className?: string;
@@ -79,6 +82,22 @@ function buildCreatePostBody(
   };
 }
 
+function buildUpdatePostBody(
+  values: CreatePostFormValues,
+  isEquipmentShare: boolean,
+): UpdatePostInput {
+  const message = values.message.trim();
+  const imageUrls = values.imageUrls;
+  if (isEquipmentShare) {
+    return {
+      message,
+      imageUrls,
+      shareSummary: values.shareSummary?.trim() ?? "",
+    };
+  }
+  return { message, imageUrls };
+}
+
 function safeErrorMessage(body: unknown): string {
   if (body && typeof body === "object" && "message" in body) {
     const m = (body as { message?: string }).message;
@@ -92,11 +111,13 @@ export function CreatePostForm({
   initialImageUrls = [],
   initialShareSummary = "",
   equipmentShare,
+  editPostId,
   onSuccess,
   onError,
   className,
   resetOnSuccess = true,
 }: CreatePostFormProps) {
+  const isEdit = Boolean(editPostId);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const fileScopeId = useId();
   const {
@@ -134,8 +155,35 @@ export function CreatePostForm({
 
   const onSubmit = async (values: CreatePostFormValues) => {
     setSubmitError(null);
-    const body = buildCreatePostBody(values, equipmentShare);
     try {
+      if (isEdit && editPostId) {
+        const body = buildUpdatePostBody(values, Boolean(equipmentShare));
+        const response = await apiClient.feed.updatePost({
+          params: { id: editPostId },
+          body,
+        });
+        if (response.status === 200) {
+          onSuccess?.(response.body);
+          if (resetOnSuccess) {
+            reset({
+              message: "",
+              imageUrls: [],
+              shareSummary: "",
+            });
+          }
+        } else if (response.status === 400) {
+          const msg = safeErrorMessage(response.body);
+          setSubmitError(msg);
+          onError?.(msg);
+        } else {
+          const msg = "Não foi possível salvar as alterações. Tente novamente.";
+          setSubmitError(msg);
+          onError?.(msg);
+        }
+        return;
+      }
+
+      const body = buildCreatePostBody(values, equipmentShare);
       const response = await apiClient.feed.createPost({ body });
       if (response.status === 201) {
         onSuccess?.(response.body);
@@ -232,7 +280,13 @@ export function CreatePostForm({
         </div>
       ) : null}
       <Button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Publicando…" : "Publicar"}
+        {isSubmitting
+          ? isEdit
+            ? "Salvando…"
+            : "Publicando…"
+          : isEdit
+            ? "Salvar alterações"
+            : "Publicar"}
       </Button>
     </form>
   );

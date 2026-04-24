@@ -1,5 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import type { CreatePostInput } from '@coffee-lovers/shared';
+import type { CreatePostInput, UpdatePostInput } from '@coffee-lovers/shared';
 
 const maxMessageLength = 5000;
 const maxImageUrls = 10;
@@ -40,6 +40,34 @@ export class Post {
       kind: input.kind,
       userEquipamentId: input.userEquipamentId,
       shareSummary: input.shareSummary,
+    });
+  }
+
+  static fromExistingWithUpdate(
+    existing: Post,
+    input: UpdatePostInput,
+  ): Post {
+    const id = existing.getId();
+    if (!id) {
+      throw new BadRequestException('post id is required to update');
+    }
+    const kind = existing.getKind();
+    const shareForCreate =
+      kind === 'equipment_share'
+        ? input.shareSummary !== undefined
+          ? input.shareSummary.trim() || undefined
+          : (existing.getShareSummary() ?? undefined)
+        : undefined;
+    return this.create({
+      id,
+      authorId: existing.getAuthorId(),
+      message: input.message,
+      imageUrls: input.imageUrls,
+      kind,
+      userEquipamentId: existing.getUserEquipamentId() ?? undefined,
+      shareSummary: shareForCreate,
+      createdAt: existing.getCreatedAt(),
+      updatedAt: new Date(),
     });
   }
 

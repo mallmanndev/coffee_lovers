@@ -25,6 +25,22 @@ export const createPostInputSchema = z.object({
   shareSummary: z.string().max(500).optional(),
 });
 
+export const updatePostInputSchema = z.object({
+  message: z.string().min(1).max(maxMessageLength),
+  imageUrls: z
+    .array(
+      z
+        .string()
+        .regex(
+          uploadUrlRegex,
+          'Cada imagem deve ser uma URL com prefixo /uploads/',
+        ),
+    )
+    .max(maxImageUrls)
+    .default([]),
+  shareSummary: z.string().max(500).optional(),
+});
+
 export const feedPostAuthorSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -80,3 +96,4 @@ export type AddCommentInput = z.infer<typeof addCommentInputSchema>;
 export type FeedCommentItem = z.infer<typeof feedCommentItemSchema>;
 export type FeedCommentListResponse = z.infer<typeof feedCommentListResponseSchema>;
 export type CreatePostOutput = z.infer<typeof createPostOutputSchema>;
+export type UpdatePostInput = z.infer<typeof updatePostInputSchema>;

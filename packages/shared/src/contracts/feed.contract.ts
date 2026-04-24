@@ -7,6 +7,7 @@ import {
   feedCommentListResponseSchema,
   feedPostListResponseSchema,
   likeStateSchema,
+  updatePostInputSchema,
 } from '../schemas/feed.schema';
 
 const c = initContract();
@@ -52,6 +53,19 @@ export const feedContract = c.router({
       ...authErr,
     },
     summary: 'Remove o próprio post do feed',
+  },
+  updatePost: {
+    method: 'PATCH',
+    path: '/feed/posts/:id',
+    body: updatePostInputSchema,
+    responses: {
+      200: createPostOutputSchema,
+      400: err,
+      403: err,
+      404: err,
+      ...authErr,
+    },
+    summary: 'Atualiza o próprio post no feed',
   },
   likePost: {
     method: 'POST',

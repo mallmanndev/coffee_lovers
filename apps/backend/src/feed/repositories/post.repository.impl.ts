@@ -46,6 +46,32 @@ export class MongoosePostRepository implements PostRepository {
     return doc ? this.mapToEntity(doc) : null;
   }
 
+  async update(post: Post): Promise<Post> {
+    const id = post.getId();
+    if (!id || !Types.ObjectId.isValid(id)) {
+      throw new Error('invalid post id for update');
+    }
+    const kind = post.getKind();
+    const $set: Record<string, unknown> = {
+      message: post.getMessage(),
+      imageUrls: post.getImageUrls(),
+    };
+    if (kind === 'equipment_share') {
+      $set.shareSummary = post.getShareSummary() || undefined;
+    }
+    const update: Record<string, unknown> = { $set };
+    if (kind === 'user') {
+      update.$unset = { shareSummary: '' };
+    }
+    const doc = await this.postModel
+      .findByIdAndUpdate(id, update, { new: true })
+      .exec();
+    if (!doc) {
+      throw new Error('post not found after update');
+    }
+    return this.mapToEntity(doc);
+  }
+
   async deleteById(id: string): Promise<void> {
     if (!Types.ObjectId.isValid(id)) {
       return;

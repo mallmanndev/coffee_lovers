@@ -7,5 +7,6 @@ export abstract class PostRepository {
     id: string,
     authorId: string,
   ): Promise<Post | null>;
+  abstract update(post: Post): Promise<Post>;
   abstract deleteById(id: string): Promise<void>;
 }

@@ -6,6 +6,7 @@ import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../../auth/decorators/current-user.decorator';
 import { CreatePostUseCase } from '../use-cases/create-post.use-case';
 import { DeletePostUseCase } from '../use-cases/delete-post.use-case';
+import { UpdatePostUseCase } from '../use-cases/update-post.use-case';
 import { LikePostUseCase } from '../use-cases/like-post.use-case';
 import { UnlikePostUseCase } from '../use-cases/unlike-post.use-case';
 import { AddCommentToPostUseCase } from '../use-cases/add-comment-to-post.use-case';
@@ -18,6 +19,7 @@ export class FeedController {
   constructor(
     private readonly createPostUseCase: CreatePostUseCase,
     private readonly deletePostUseCase: DeletePostUseCase,
+    private readonly updatePostUseCase: UpdatePostUseCase,
     private readonly likePostUseCase: LikePostUseCase,
     private readonly unlikePostUseCase: UnlikePostUseCase,
     private readonly addCommentToPostUseCase: AddCommentToPostUseCase,
@@ -61,6 +63,21 @@ export class FeedController {
     return tsRestHandler(feedContract.deletePost, async ({ params }) => {
       await this.deletePostUseCase.execute(params.id, user.sub);
       return { status: 204, body: null };
+    });
+  }
+
+  @TsRestHandler(feedContract.updatePost)
+  @UseGuards(JwtAuthGuard)
+  async updatePost(
+    @CurrentUser() user: { sub: string },
+  ): Promise<unknown> {
+    return tsRestHandler(feedContract.updatePost, async ({ params, body }) => {
+      const result = await this.updatePostUseCase.execute(
+        params.id,
+        body,
+        user.sub,
+      );
+      return { status: 200, body: result };
     });
   }
 
