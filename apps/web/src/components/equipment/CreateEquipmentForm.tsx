@@ -4,6 +4,7 @@ import { useForm, FormProvider, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   createEquipamentInputSchema,
+  type CreateEquipamentOutput,
   type EquipamentType,
 } from "@coffee-lovers/shared";
 import type { EquipmentFormValues } from "@/components/equipment/equipment-form-values";
@@ -27,7 +28,7 @@ import { EquipmentPhotosField } from "@/components/equipment/EquipmentPhotosFiel
 import { EQUIPMENT_TYPE_LABELS } from "@/components/equipment/equipment-type-labels";
 
 type CreateEquipmentFormProps = {
-  onSuccess: () => void;
+  onSuccess: (created: CreateEquipamentOutput) => void;
   onCancel?: () => void;
 };
 
@@ -67,7 +68,7 @@ export function CreateEquipmentForm({ onSuccess, onCancel }: CreateEquipmentForm
       });
       if (response.status === 201) {
         methods.reset();
-        onSuccess();
+        onSuccess(response.body);
       } else if (response.status === 401) {
         setError("Sessão expirada. Faça login novamente.");
       } else if (response.status === 404) {

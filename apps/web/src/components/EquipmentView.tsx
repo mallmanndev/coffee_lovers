@@ -2,7 +2,15 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { apiClient } from "@/lib/api-client";
-import type { EquipamentResponse } from "@coffee-lovers/shared";
+import type {
+  CreateEquipamentOutput,
+  EquipamentResponse,
+} from "@coffee-lovers/shared";
+import {
+  formatEquipmentShareDraft,
+  formatEquipmentShareSummary,
+} from "@/lib/format-equipment-share-draft";
+import { CreatePostForm } from "@/components/feed/CreatePostForm";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -33,6 +41,9 @@ export function EquipmentView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [sharePostDraft, setSharePostDraft] =
+    useState<CreateEquipamentOutput | null>(null);
 
   const load = useCallback(async () => {
     setError(null);
@@ -56,10 +67,19 @@ export function EquipmentView() {
     void load();
   }, [load]);
 
-  const handleCreated = () => {
+  const handleCreated = (created: CreateEquipamentOutput) => {
     setOpen(false);
+    setSharePostDraft(created);
+    setShareOpen(true);
     setLoading(true);
     void load();
+  };
+
+  const handleShareOpenChange = (next: boolean) => {
+    setShareOpen(next);
+    if (!next) {
+      setSharePostDraft(null);
+    }
   };
 
   return (
@@ -92,6 +112,38 @@ export function EquipmentView() {
                   onCancel={() => setOpen(false)}
                 />
               </div>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog open={shareOpen} onOpenChange={handleShareOpenChange}>
+            <DialogContent
+              className="sm:max-w-lg max-h-[min(90vh,720px)] overflow-y-auto gap-0"
+              showCloseButton
+            >
+              <DialogHeader>
+                <DialogTitle>Compartilhar no feed</DialogTitle>
+                <DialogDescription>
+                  Revise a mensagem e as fotos antes de publicar. Você pode editar
+                  antes de enviar.
+                </DialogDescription>
+              </DialogHeader>
+              {sharePostDraft ? (
+                <div className="pt-4">
+                  <CreatePostForm
+                    key={sharePostDraft.userEquipamentId}
+                    initialMessage={formatEquipmentShareDraft(sharePostDraft)}
+                    initialImageUrls={sharePostDraft.photos}
+                    equipmentShare={{
+                      userEquipamentId: sharePostDraft.userEquipamentId,
+                      shareSummary: formatEquipmentShareSummary(sharePostDraft),
+                    }}
+                    onSuccess={() => {
+                      setShareOpen(false);
+                      setSharePostDraft(null);
+                    }}
+                  />
+                </div>
+              ) : null}
             </DialogContent>
           </Dialog>
         </div>
