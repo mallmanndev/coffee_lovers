@@ -11,6 +11,7 @@ export class CreateCoffeeUseCase {
     dto: CreateCoffeeInput,
     userId: string,
   ): Promise<CreateCoffeeOutput> {
+    console.log('DTO:', dto);
     const coffee = Coffee.create({
       ...dto,
       userId,
@@ -30,6 +31,7 @@ export class CreateCoffeeUseCase {
       region: createdCoffee.getRegion() ?? undefined,
       altitude_meters: createdCoffee.getAltitudeMeters(),
       variety: createdCoffee.getVariety() ?? undefined,
+      photos: createdCoffee.getPhotos(),
       processing: processing ?? undefined,
       roast: roast ?? undefined,
       sensory_profile: sensoryProfile ?? undefined,

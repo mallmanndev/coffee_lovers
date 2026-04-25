@@ -65,6 +65,9 @@ export class CoffeeDocument {
   @Prop()
   variety?: string;
 
+  @Prop({ type: [String], default: [] })
+  photos!: string[];
+
   @Prop({ type: ProcessingDocument })
   processing?: ProcessingDocument;
 

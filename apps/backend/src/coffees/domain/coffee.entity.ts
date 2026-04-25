@@ -1,36 +1,37 @@
 import { BadRequestException } from '@nestjs/common';
 
 export type CoffeeProcessing = {
-  processing_method?: string;
-  fermentation_details?: string;
-  drying_method?: string;
+  processing_method?: string | null;
+  fermentation_details?: string | null;
+  drying_method?: string | null;
 };
 
 export type CoffeeRoast = {
-  roast_profile?: string;
+  roast_profile?: string | null;
 };
 
 export type CoffeeSensoryProfile = {
-  notes?: string;
-  acidity?: string;
-  body?: string;
-  sweetness?: string;
-  finish?: string;
+  notes?: string | null;
+  acidity?: string | null;
+  body?: string | null;
+  sweetness?: string | null;
+  finish?: string | null;
   sca_score?: number | null;
 };
 
 export type CoffeeProps = {
   id?: string;
   coffee_name: string;
-  producer_farm?: string;
+  producer_farm?: string | null;
   roastery: string;
-  origin_country?: string;
-  region?: string;
+  origin_country?: string | null;
+  region?: string | null;
   altitude_meters?: number | null;
-  variety?: string;
-  processing?: CoffeeProcessing;
-  roast?: CoffeeRoast;
-  sensory_profile?: CoffeeSensoryProfile;
+  variety?: string | null;
+  photos?: string[];
+  processing?: CoffeeProcessing | null;
+  roast?: CoffeeRoast | null;
+  sensory_profile?: CoffeeSensoryProfile | null;
   userId: string;
   createdAt?: Date;
   updatedAt?: Date;
@@ -46,6 +47,7 @@ export class Coffee {
     private readonly region: string | null,
     private readonly altitudeMeters: number | null,
     private readonly variety: string | null,
+    private readonly photos: string[],
     private readonly processing: CoffeeProcessing | null,
     private readonly roast: CoffeeRoast | null,
     private readonly sensoryProfile: CoffeeSensoryProfile | null,
@@ -88,6 +90,7 @@ export class Coffee {
       props.region?.trim() || null,
       props.altitude_meters ?? null,
       props.variety?.trim() || null,
+      props.photos ?? [],
       props.processing
         ? {
             processing_method: props.processing.processing_method?.trim(),
@@ -122,45 +125,40 @@ export class Coffee {
     }
   }
 
-  private static validateOptionalText(field: string, value?: string) {
+  private static validateOptionalText(field: string, value?: string | null) {
     if (
       value !== undefined &&
+      value !== null &&
       (typeof value !== 'string' || value.trim().length === 0)
     ) {
       throw new BadRequestException(`${field} cannot be empty when provided`);
     }
   }
 
-  private static validateProcessing(processing?: CoffeeProcessing) {
+  private static validateProcessing(processing?: CoffeeProcessing | null) {
     if (!processing) return;
-    if (processing.processing_method !== undefined) {
-      this.validateOptionalText(
-        'processing.processing_method',
-        processing.processing_method,
-      );
-    }
-    if (processing.fermentation_details !== undefined) {
-      this.validateOptionalText(
-        'processing.fermentation_details',
-        processing.fermentation_details,
-      );
-    }
-    if (processing.drying_method !== undefined) {
-      this.validateOptionalText(
-        'processing.drying_method',
-        processing.drying_method,
-      );
-    }
+    this.validateOptionalText(
+      'processing.processing_method',
+      processing.processing_method,
+    );
+    this.validateOptionalText(
+      'processing.fermentation_details',
+      processing.fermentation_details,
+    );
+    this.validateOptionalText(
+      'processing.drying_method',
+      processing.drying_method,
+    );
   }
 
-  private static validateRoast(roast?: CoffeeRoast) {
+  private static validateRoast(roast?: CoffeeRoast | null) {
     if (!roast) return;
-    if (roast.roast_profile !== undefined) {
-      this.validateOptionalText('roast.roast_profile', roast.roast_profile);
-    }
+    this.validateOptionalText('roast.roast_profile', roast.roast_profile);
   }
 
-  private static validateSensoryProfile(sensoryProfile?: CoffeeSensoryProfile) {
+  private static validateSensoryProfile(
+    sensoryProfile?: CoffeeSensoryProfile | null,
+  ) {
     if (!sensoryProfile) return;
     this.validateOptionalText('sensory_profile.notes', sensoryProfile.notes);
     this.validateOptionalText(
@@ -213,6 +211,9 @@ export class Coffee {
   }
   getVariety(): string | null {
     return this.variety;
+  }
+  getPhotos(): string[] {
+    return this.photos;
   }
   getProcessing(): CoffeeProcessing | null {
     return this.processing;

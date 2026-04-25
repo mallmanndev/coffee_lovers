@@ -19,6 +19,7 @@ describe('CreateCoffeeUseCase', () => {
           region: coffee.getRegion() ?? undefined,
           altitude_meters: coffee.getAltitudeMeters(),
           variety: coffee.getVariety() ?? undefined,
+          photos: coffee.getPhotos(),
           processing: coffee.getProcessing() ?? undefined,
           roast: coffee.getRoast() ?? undefined,
           sensory_profile: coffee.getSensoryProfile() ?? undefined,
