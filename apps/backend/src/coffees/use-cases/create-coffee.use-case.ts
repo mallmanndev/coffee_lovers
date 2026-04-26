@@ -32,9 +32,29 @@ export class CreateCoffeeUseCase {
       altitude_meters: createdCoffee.getAltitudeMeters(),
       variety: createdCoffee.getVariety() ?? undefined,
       photos: createdCoffee.getPhotos(),
-      processing: processing ?? undefined,
-      roast: roast ?? undefined,
-      sensory_profile: sensoryProfile ?? undefined,
+      processing: processing
+        ? {
+            processing_method: processing.processing_method ?? undefined,
+            fermentation_details:
+              processing.fermentation_details ?? undefined,
+            drying_method: processing.drying_method ?? undefined,
+          }
+        : undefined,
+      roast: roast
+        ? {
+            roast_profile: roast.roast_profile ?? undefined,
+          }
+        : undefined,
+      sensory_profile: sensoryProfile
+        ? {
+            body: sensoryProfile.body ?? undefined,
+            notes: sensoryProfile.notes ?? undefined,
+            acidity: sensoryProfile.acidity ?? undefined,
+            sweetness: sensoryProfile.sweetness ?? undefined,
+            finish: sensoryProfile.finish ?? undefined,
+            sca_score: sensoryProfile.sca_score ?? undefined,
+          }
+        : undefined,
       userId: createdCoffee.getUserId(),
       createdAt: createdCoffee.getCreatedAt().toISOString(),
       updatedAt: createdCoffee.getUpdatedAt().toISOString(),
