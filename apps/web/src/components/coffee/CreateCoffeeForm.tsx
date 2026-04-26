@@ -179,7 +179,10 @@ export function CreateCoffeeForm({ onSuccess, onCancel }: CreateCoffeeFormProps)
 
         <PhotoUrlsEditor
           value={watch("photos") ?? []}
-          onChange={(next) => setValue("photos", next, { shouldDirty: true, shouldValidate: true })}
+          onChange={(next) => {
+            console.log("Next photos:", next);
+            setValue("photos", next, { shouldDirty: true, shouldValidate: true })
+          }}
           disabled={isLoading}
           maxPhotos={5}
           maxFileMb={5}

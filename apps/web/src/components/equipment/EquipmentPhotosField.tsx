@@ -21,6 +21,7 @@ export function EquipmentPhotosField({ disabled }: EquipmentPhotosFieldProps) {
     <PhotoUrlsEditor
       value={photos}
       onChange={(next) => {
+        console.log("Next photos:", next);
         setValue("photos", next, { shouldDirty: true, shouldValidate: true });
       }}
       disabled={disabled}

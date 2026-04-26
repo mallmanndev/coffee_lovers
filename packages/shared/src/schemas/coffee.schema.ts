@@ -27,7 +27,7 @@ export const createCoffeeInputSchema = z.object({
   region: z.string().optional(),
   altitude_meters: z.number().nullable().optional(),
   variety: z.string().optional(),
-  photos: z.array(z.string().url()).optional(),
+  photos: z.array(z.string()).default([]),
   processing: coffeeProcessingSchema.optional(),
   roast: coffeeRoastSchema.optional(),
   sensory_profile: coffeeSensoryProfileSchema.optional(),
